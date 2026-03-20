@@ -1,0 +1,128 @@
+{
+  "skill_name": "triage-task",
+  "evals": [
+    {
+      "id": 1,
+      "name": "obvious-single-action",
+      "prompt": "Triage this task: **Call accountant about tax return**",
+      "expected_output": "Should recognise this as an obvious single action, suggest the category, and ask for quick confirmation.",
+      "assertions": [
+        {
+          "name": "suggests-single-action",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a 'single action' (or equivalent phrasing like 'one step', 'straightforward action')."
+        },
+        {
+          "name": "asks-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "The response asks the user to confirm the classification rather than asking an open-ended question."
+        },
+        {
+          "name": "no-mutations",
+          "type": "llm_judge",
+          "criteria": "The response does not attempt to move, delete, label, schedule, or update the task in any way."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "obvious-project",
+      "prompt": "Triage this task: **Get an engagement ring for Zoe**",
+      "expected_output": "Should recognise this requires multiple steps (research, budget, shop) and classify as a project.",
+      "assertions": [
+        {
+          "name": "suggests-project",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a 'project' or something requiring multiple steps."
+        },
+        {
+          "name": "asks-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "The response asks the user to confirm rather than asking an open-ended question about what they want to do."
+        },
+        {
+          "name": "no-mutations",
+          "type": "llm_judge",
+          "criteria": "The response does not attempt to move, delete, label, schedule, or update the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "obvious-trash",
+      "prompt": "Triage this task: **Cancel Netflix free trial** (the trial ended two months ago)",
+      "expected_output": "Should recognise this is no longer relevant and suggest trash/delete.",
+      "assertions": [
+        {
+          "name": "suggests-trash",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as 'trash' or suggests it should be deleted, since the trial has already ended."
+        },
+        {
+          "name": "uses-explicit-language",
+          "type": "llm_judge",
+          "criteria": "The response uses explicit language like 'delete' or 'trash' — not vague terms like 'bin it' or 'get rid of it'."
+        },
+        {
+          "name": "no-mutations",
+          "type": "llm_judge",
+          "criteria": "The response does not attempt to move, delete, label, schedule, or update the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "ambiguous-trash-or-action",
+      "prompt": "Triage this task: **Old laptop charger**",
+      "expected_output": "Should recognise this is ambiguous — could be trash, or could be an action (sell, donate, recycle). Should ask one clarifying question.",
+      "assertions": [
+        {
+          "name": "recognises-ambiguity",
+          "type": "llm_judge",
+          "criteria": "The response does NOT immediately classify the task. It recognises the task is ambiguous and could go multiple ways."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question to resolve the ambiguity (not multiple questions or a list of options)."
+        },
+        {
+          "name": "no-mutations",
+          "type": "llm_judge",
+          "criteria": "The response does not attempt to move, delete, label, schedule, or update the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "ambiguous-someday-or-project",
+      "prompt": "Triage this task: **Learn Spanish**",
+      "followups": [
+        "It's more of a someday thing, I'm not going to start on it now"
+      ],
+      "expected_output": "Should ask whether this is something to act on now or a someday/maybe. After user says someday, should classify as someday/maybe.",
+      "assertions": [
+        {
+          "name": "asks-about-timing-or-intent",
+          "type": "llm_judge",
+          "criteria": "The initial response asks whether this is something the user wants to act on now or more of a future aspiration."
+        },
+        {
+          "name": "classifies-as-someday",
+          "type": "llm_judge",
+          "criteria": "After the user says it's a someday thing, the response classifies it as 'someday/maybe' (or equivalent phrasing)."
+        },
+        {
+          "name": "no-mutations",
+          "type": "llm_judge",
+          "criteria": "The response does not attempt to move, delete, label, schedule, or update the task."
+        }
+      ],
+      "files": []
+    }
+  ]
+}
