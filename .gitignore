@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+*.log
+.env
+
+# Eval workspace outputs (generated, not source)
+*-workspace/
