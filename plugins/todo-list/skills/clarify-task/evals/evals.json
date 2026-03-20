@@ -30,9 +30,9 @@
       "name": "single-word-topic-with-followup",
       "prompt": "Clarify this task: **Finances**",
       "followups": [
-        "I need to call my accountant about the tax return"
+        "I need to call my accountant about the tax return — it's overdue and I might get fined"
       ],
-      "expected_output": "After the user's response, should propose a concrete verb-led task name like 'Call accountant about tax return'.",
+      "expected_output": "After the user's response, should propose a concrete verb-led task name like 'Call accountant about tax return' (without urgency qualifiers in the name) and a description capturing the urgency/fine risk.",
       "assertions": [
         {
           "name": "initial-response-asks-one-question",
@@ -45,14 +45,29 @@
           "criteria": "After the user says they need to call their accountant about the tax return, the proposed task name starts with a verb (e.g. 'Call', 'Phone', 'Contact')."
         },
         {
+          "name": "name-is-core-action-only",
+          "type": "llm_judge",
+          "criteria": "The proposed task name focuses on the core action without urgency qualifiers like 'overdue', 'urgent', or 'ASAP'. For example, 'Call accountant about tax return' is good; 'Call accountant about overdue tax return' puts too much context in the name."
+        },
+        {
           "name": "proposed-name-under-10-words",
           "type": "llm_judge",
           "criteria": "The proposed task name is 10 words or fewer."
         },
         {
+          "name": "proposes-description",
+          "type": "llm_judge",
+          "criteria": "The response includes a proposed description (not just a name). The description is presented as a distinct field, separate from the name."
+        },
+        {
+          "name": "description-captures-context",
+          "type": "llm_judge",
+          "criteria": "The proposed description captures context the user provided that goes beyond the name — specifically the urgency (overdue) and the risk of being fined."
+        },
+        {
           "name": "asks-for-confirmation",
           "type": "llm_judge",
-          "criteria": "After proposing the name, asks the user to confirm whether it captures the task correctly."
+          "criteria": "After proposing the name and description, asks the user to confirm whether it captures the task correctly."
         }
       ],
       "files": []
@@ -61,22 +76,30 @@
       "id": 3,
       "name": "already-clear-task",
       "prompt": "Clarify this task: **Call dentist to book cleaning**",
-      "expected_output": "Should recognise the task is already clear and say so. Should not ask questions or propose a rename.",
+      "followups": [
+        "It's Dr. Patel at Smile Dental, their number is 020 7946 0958"
+      ],
+      "expected_output": "Should recognise the task name is already clear and not rename it. Should ask if there are useful details to capture (like phone number). After followup, should propose a description with the contact details.",
       "assertions": [
         {
           "name": "recognises-task-is-clear",
           "type": "llm_judge",
-          "criteria": "The response explicitly states that the task is already clear, specific, or well-defined. It does not treat it as needing clarification."
-        },
-        {
-          "name": "does-not-ask-questions",
-          "type": "llm_judge",
-          "criteria": "The response does not ask the user any clarifying questions about the task."
+          "criteria": "The response explicitly states that the task is already clear, specific, or well-defined. It does not treat the name as needing clarification."
         },
         {
           "name": "does-not-rename",
           "type": "llm_judge",
           "criteria": "The response does not propose a new name or suggest renaming the task."
+        },
+        {
+          "name": "asks-about-details",
+          "type": "llm_judge",
+          "criteria": "The response asks whether there are useful details to note — such as a phone number, which dentist, or any other context worth capturing in a description."
+        },
+        {
+          "name": "description-captures-contact-details",
+          "type": "llm_judge",
+          "criteria": "After the user provides details, the proposed description includes the dentist name (Dr. Patel / Smile Dental) and phone number (020 7946 0958)."
         }
       ],
       "files": []
@@ -110,9 +133,9 @@
       "name": "noun-only-with-followup",
       "prompt": "Clarify this task: **Engagement ring**",
       "followups": [
-        "I want to research styles and prices before I go shopping"
+        "I want to research styles and prices before I go shopping — she likes sapphires and my budget is around $3k"
       ],
-      "expected_output": "After the user's response, should propose a concrete action-oriented name like 'Research engagement ring styles and prices'.",
+      "expected_output": "After the user's response, should propose a concrete action-oriented name like 'Research engagement ring styles and prices' and a description capturing preferences and budget.",
       "assertions": [
         {
           "name": "initial-response-asks-one-question",
@@ -133,6 +156,50 @@
           "name": "proposed-name-under-10-words",
           "type": "llm_judge",
           "criteria": "The proposed task name is 10 words or fewer."
+        },
+        {
+          "name": "proposes-description",
+          "type": "llm_judge",
+          "criteria": "The response includes a proposed description (not just a name). The description is presented as a distinct field, separate from the name."
+        },
+        {
+          "name": "description-captures-preferences-and-budget",
+          "type": "llm_judge",
+          "criteria": "The proposed description captures the specific details the user mentioned: sapphire preference and ~$3k budget."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "rich-context-skip-question",
+      "prompt": "Clarify this task: **Holiday** — I need to book flights to Barcelona for the first week of June, flying from London. It's for our anniversary.",
+      "expected_output": "Should skip the clarifying question since enough context is given, and go straight to proposing a name and description.",
+      "assertions": [
+        {
+          "name": "does-not-ask-question",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask a clarifying question. It goes straight to proposing a name and description because enough context was provided."
+        },
+        {
+          "name": "proposes-verb-led-name",
+          "type": "llm_judge",
+          "criteria": "The proposed task name starts with a verb (e.g. 'Book', 'Find')."
+        },
+        {
+          "name": "proposed-name-under-10-words",
+          "type": "llm_judge",
+          "criteria": "The proposed task name is 10 words or fewer."
+        },
+        {
+          "name": "proposes-description",
+          "type": "llm_judge",
+          "criteria": "The response includes a proposed description as a distinct field, separate from the name."
+        },
+        {
+          "name": "description-captures-details",
+          "type": "llm_judge",
+          "criteria": "The description captures key details: Barcelona, first week of June, flying from London, and that it's for an anniversary."
         }
       ],
       "files": []
