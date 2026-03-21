@@ -203,6 +203,60 @@
         }
       ],
       "files": []
+    },
+    {
+      "id": 7,
+      "name": "trash-already-done",
+      "prompt": "Clarify this task: **Cancel gym membership**",
+      "followups": [
+        "Oh I actually already did that last week, forgot to delete it"
+      ],
+      "expected_output": "After the user says they already did it, should identify this as trash and confirm deletion. Should NOT try to rename or enrich it.",
+      "assertions": [
+        {
+          "name": "identifies-as-trash",
+          "type": "llm_judge",
+          "criteria": "After the user says they already did it, the response identifies the task as no longer needed — trash, not actionable."
+        },
+        {
+          "name": "confirms-deletion",
+          "type": "llm_judge",
+          "criteria": "The response asks to confirm deletion or offers to delete/complete the task."
+        },
+        {
+          "name": "does-not-rename",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a new name or description for the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "reference-not-a-task",
+      "prompt": "Clarify this task: **SKY-4829**",
+      "followups": [
+        "That's the reference number for my insurance claim — I need it when I call them about the water damage"
+      ],
+      "expected_output": "Should identify this as reference information, not a task. Should ask which existing task to attach it to as a comment.",
+      "assertions": [
+        {
+          "name": "identifies-as-reference",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as reference information rather than an actionable task."
+        },
+        {
+          "name": "asks-where-to-attach",
+          "type": "llm_judge",
+          "criteria": "The response asks which existing task this reference info should be attached to as a comment."
+        },
+        {
+          "name": "does-not-propose-as-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose keeping this as a standalone task with a new name."
+        }
+      ],
+      "files": []
     }
   ]
 }
