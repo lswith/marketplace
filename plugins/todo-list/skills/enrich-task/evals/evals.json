@@ -1,0 +1,106 @@
+{
+  "skill_name": "enrich-task",
+  "evals": [
+    {
+      "id": 1,
+      "name": "obvious-context-labels",
+      "prompt": "Enrich this task: **Pick up dry cleaning** — In the One-Off Tasks project, no labels or priority set. Description: 'Suits from the place on High Street, ready after 3pm.'",
+      "expected_output": "Should silently apply @errands label (if it exists) without asking. Should propose priority and possibly a due date. Should NOT ask about the label — it's obvious from the task.",
+      "assertions": [
+        {
+          "name": "applies-errands-label",
+          "type": "llm_judge",
+          "criteria": "The response applies or proposes an @errands context label (or similar location-based label). It does this confidently, not as a question."
+        },
+        {
+          "name": "proposes-priority",
+          "type": "llm_judge",
+          "criteria": "The response proposes a priority level for the task."
+        },
+        {
+          "name": "single-confirmation-round",
+          "type": "llm_judge",
+          "criteria": "The response presents all proposed changes in one batch and asks for a single confirmation — not multiple rounds of questions."
+        },
+        {
+          "name": "does-not-rename-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose changing the task name or description (unless noting a waiting-for situation)."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "task-with-implied-deadline",
+      "prompt": "Enrich this task: **Submit tax return** — In the One-Off Tasks project, no metadata set. Description: 'Self-assessment tax return for 2024/25. The deadline is 31 January 2026.'",
+      "expected_output": "Should propose a deadline (31 Jan) distinct from a due date (earlier, when to work on it). Should set high priority given it's a legal obligation with a hard deadline.",
+      "assertions": [
+        {
+          "name": "sets-deadline",
+          "type": "llm_judge",
+          "criteria": "The response proposes a deadline or hard due date of 31 January 2026 (or equivalent). It recognises this as an external, immovable constraint."
+        },
+        {
+          "name": "suggests-earlier-due-date",
+          "type": "llm_judge",
+          "criteria": "The response suggests a due date that is before the deadline — the date to actually work on it, not the final deadline."
+        },
+        {
+          "name": "sets-high-priority",
+          "type": "llm_judge",
+          "criteria": "The response proposes a high priority (p1 or p2) given this is a legal obligation with consequences for missing it."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "someday-maybe-task",
+      "prompt": "Enrich this task: **Learn to play guitar** — In a project under the Someday/Maybe area. Description: 'Always wanted to learn, maybe start with online lessons.'",
+      "expected_output": "Should focus on making the name and description solid for future revisiting. Should skip priority and due date since it's someday/maybe. Context labels still fine if obvious.",
+      "assertions": [
+        {
+          "name": "skips-priority",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a priority level. It recognises this is a someday/maybe task where priority doesn't apply."
+        },
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date or deadline. Someday/maybe items don't get dates."
+        },
+        {
+          "name": "focuses-on-description-quality",
+          "type": "llm_judge",
+          "criteria": "The response focuses on ensuring the name and description are clear enough to stand on their own when revisited weeks later."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "waiting-for-detection",
+      "prompt": "Enrich this task: **Book flights to Barcelona** — In the One-Off Tasks project. Description: 'Anniversary trip, first week of June. Need to wait for Sarah to confirm she can get the time off work before booking.'",
+      "expected_output": "Should detect the waiting-for situation (waiting for Sarah to confirm time off). Should apply @waiting label and note the blocker in the description.",
+      "assertions": [
+        {
+          "name": "detects-waiting-for",
+          "type": "llm_judge",
+          "criteria": "The response identifies that this task is blocked — waiting for Sarah to confirm her time off before the user can proceed."
+        },
+        {
+          "name": "applies-waiting-label",
+          "type": "llm_judge",
+          "criteria": "The response proposes applying a @waiting label (or similar waiting-for label)."
+        },
+        {
+          "name": "notes-blocker-in-description",
+          "type": "llm_judge",
+          "criteria": "The response proposes updating the description to note what the task is waiting on (Sarah confirming time off)."
+        }
+      ],
+      "files": []
+    }
+  ]
+}

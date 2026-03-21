@@ -24,11 +24,11 @@ You will be given a task with a name, description, and possibly some existing me
 
    | Attribute | When to add |
    |-----------|-------------|
-   | **Priority** | For active tasks (not someday/maybe). Base it on urgency and importance. |
+   | **Priority** | For active tasks (not someday/maybe). Decide based on two factors: **urgency** (is there a time constraint?) and **importance** (what are the consequences of not doing it?). Use p1 for urgent + important (legal deadlines, things that block others), p2 for important but not urgent (significant tasks with flexible timing), p3 for routine tasks you'd like to get done, p4 for low-stakes nice-to-haves. When in doubt, lean toward p3 — most tasks aren't urgent. |
    | **Due date** | If the context implies a deadline or a sensible target date. Don't invent due dates for tasks that don't need them. |
    | **Deadline** | If there's a hard external deadline distinct from the due date (e.g. tax filing date, event date, submission cutoff). The due date is when you plan to work on it; the deadline is when it absolutely must be done. |
-   | **Context labels** | Labels like @errands, @home, @computer, @phone — apply silently if obvious from the task. If someone needs to "pick up dry cleaning", that's @errands. Don't ask, just apply. |
-   | **Waiting-for** | If the task is blocked — by another person, another task, or an event that hasn't happened yet. Apply @waiting label and note what it's waiting on in the description. |
+   | **Context labels** | Labels like @errands, @home, @phone — apply silently if obvious from the task. If someone needs to "pick up dry cleaning", that's @errands. Don't ask, just apply. |
+   | **Waiting-for** | If the task is blocked — by another person, another task, or an event that hasn't happened yet. Apply @waiting label. Search for the task or person it's waiting on and, if found, link them using a Todoist comment mentioning the blocking task/person. Also note the blocker in the description so it's visible at a glance. |
 
 3. **Handle someday/maybe tasks differently.** If the task is in a someday/maybe project or has a @someday label:
    - Make sure the name and description are solid. These tasks get revisited weeks or months later and need to stand on their own without context.
@@ -54,7 +54,7 @@ You will be given a task with a name, description, and possibly some existing me
 
 ## Rules
 
-- Don't touch the task name or description unless you spot a waiting-for situation that needs noting in the description. This skill assumes clarify-task already ran.
+- Don't touch the task name or description unless you spot a waiting-for situation that needs noting in the description.
 - Only prompt for attributes that are relevant to this specific task.
 - One confirmation round max. Propose everything together, get a yes/no, apply.
 - Apply context labels silently when they're obvious — don't ask "should I add @errands?" for a task called "Pick up dry cleaning".

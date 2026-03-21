@@ -1,0 +1,111 @@
+{
+  "skill_name": "route-task",
+  "evals": [
+    {
+      "id": 1,
+      "name": "quick-two-minute-task",
+      "prompt": "Route this task: **Reply to Sarah's email about Friday** — She asked if I'm free for lunch, just need to say yes.",
+      "expected_output": "Should recognise this as a 2-minute task and suggest the user just do it now. Should not move it to a project or One-Off Tasks.",
+      "assertions": [
+        {
+          "name": "suggests-do-it-now",
+          "type": "llm_judge",
+          "criteria": "The response suggests doing the task now or mentions the 2-minute rule. It frames this as something quick the user could knock out right away."
+        },
+        {
+          "name": "does-not-move-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT move the task to One-Off Tasks or any project. It leaves the task in the inbox for the user to do."
+        },
+        {
+          "name": "does-not-create-project",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest creating a project or mention setup-project."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "clearly-multi-step-project",
+      "prompt": "Route this task: **Plan holiday to Japan** — Want to go for two weeks in October, need to sort flights, accommodation, itinerary, and travel insurance.",
+      "expected_output": "Should identify this as a multi-step project. Should state it's a project and hand off to setup-project. Should NOT move it to One-Off Tasks.",
+      "assertions": [
+        {
+          "name": "identifies-as-project",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task as requiring multiple steps — it's a project, not a single action."
+        },
+        {
+          "name": "references-setup-project",
+          "type": "llm_judge",
+          "criteria": "The response mentions handing off to setup-project or setting up the project separately. It does not try to create the project itself."
+        },
+        {
+          "name": "does-not-defer-to-one-off",
+          "type": "llm_judge",
+          "criteria": "The response does NOT move the task to One-Off Tasks."
+        },
+        {
+          "name": "does-not-suggest-two-minute",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest this is a quick 2-minute task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "single-action-defer",
+      "prompt": "Route this task: **Buy new running shoes** — Current pair is worn out, need to get a new pair from the running shop in town.",
+      "expected_output": "Should recognise this as a single-action task that's not quick (can't be done in 2 minutes). Should move to One-Off Tasks and then run enrich-task.",
+      "assertions": [
+        {
+          "name": "moves-to-one-off-tasks",
+          "type": "llm_judge",
+          "criteria": "The response moves (or proposes moving) the task to the One-Off Tasks project."
+        },
+        {
+          "name": "references-enrich-task",
+          "type": "llm_judge",
+          "criteria": "The response mentions running enrich-task or enriching the task with metadata after moving it."
+        },
+        {
+          "name": "does-not-suggest-two-minute",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest this is a 2-minute task the user should do right now."
+        },
+        {
+          "name": "does-not-create-project",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest creating a project or mention setup-project."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "ambiguous-single-or-multi-step",
+      "prompt": "Route this task: **Fix the leaking tap in the kitchen** — It's been dripping for a week, getting worse.",
+      "expected_output": "Should ask the user whether this is a one-step fix or needs multiple steps (e.g. buy parts, call plumber, etc). Should not assume either way.",
+      "assertions": [
+        {
+          "name": "asks-about-complexity",
+          "type": "llm_judge",
+          "criteria": "The response asks the user whether this is a single-step task or needs multiple steps. It doesn't assume the answer."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question — not zero, not multiple questions at once."
+        },
+        {
+          "name": "does-not-skip-to-two-minute",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest this is a 2-minute task."
+        }
+      ],
+      "files": []
+    }
+  ]
+}
