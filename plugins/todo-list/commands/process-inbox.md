@@ -57,7 +57,7 @@ Load the `clarify-task` skill using the Skill tool. The task might be:
 
 Load the `route-task` skill using the Skill tool. The task will be routed to one of three outcomes:
 - **2-minute task** → user skips it (leaves in inbox to do themselves), move to next task.
-- **Project** → load the `setup-project` skill to create the project (define outcome, assign area, create first action, decide priority vs someday/maybe), then move to next task.
+- **Project** → load the `setup-project` skill to create the project (define outcome, assign area, create first action, decide priority vs someday/maybe). Then clarify and enrich the first action — run steps 2 and 4 on that task (skip routing, it's already in the project).
 - **Single action** → move to One-Off Tasks, continue to step 4.
 
 ### 4. Enrich
