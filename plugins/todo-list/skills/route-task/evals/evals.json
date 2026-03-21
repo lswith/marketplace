@@ -1,0 +1,126 @@
+{
+  "skill_name": "route-task",
+  "evals": [
+    {
+      "id": 1,
+      "name": "obvious-two-minute-task",
+      "prompt": "Route this task: **Reply to Sarah's email about Friday**\nDescription: She asked if I'm free for lunch on Friday.",
+      "expected_output": "Should suggest this is a 2-minute task and ask if the user wants to do it now.",
+      "assertions": [
+        {
+          "name": "suggests-two-minute-rule",
+          "type": "llm_judge",
+          "criteria": "The response suggests this is a quick task that can be done in under 2 minutes, or explicitly references the 2-minute rule."
+        },
+        {
+          "name": "asks-to-do-now",
+          "type": "llm_judge",
+          "criteria": "The response asks the user if they want to do this task now / right away / immediately."
+        },
+        {
+          "name": "does-not-move-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT move the task to a project or take any action beyond suggesting the user do it now."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "obvious-project",
+      "prompt": "Route this task: **Plan holiday to Japan**\nDescription: Two-week trip in October, need to sort flights, accommodation, itinerary, and travel insurance.",
+      "expected_output": "Should identify this as a multi-step project without needing to ask.",
+      "assertions": [
+        {
+          "name": "identifies-as-project",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a project or states it needs multiple steps."
+        },
+        {
+          "name": "does-not-ask-if-multi-step",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask the user whether this is multi-step — it confidently states that it is, since the description lists multiple components."
+        },
+        {
+          "name": "references-setup-project",
+          "type": "llm_judge",
+          "criteria": "The response mentions setting up a project or moving to project setup as the next step."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "single-action-deferred",
+      "prompt": "Route this task: **Buy birthday present for Mum**\nDescription: Her birthday is March 30. She mentioned wanting a new cookbook.",
+      "expected_output": "Should recognise this as a single action (not a project, not 2-minute) and move it to One-Off Tasks.",
+      "assertions": [
+        {
+          "name": "does-not-suggest-two-minute",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest this is a 2-minute task."
+        },
+        {
+          "name": "does-not-identify-as-project",
+          "type": "llm_judge",
+          "criteria": "The response does NOT identify this as a project requiring multiple steps."
+        },
+        {
+          "name": "moves-to-one-off-tasks",
+          "type": "llm_judge",
+          "criteria": "The response moves (or proposes to move) the task to a 'One-Off Tasks' project."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "ambiguous-project-or-single",
+      "prompt": "Route this task: **Sort out home insurance**\nDescription: Current policy expires next month, need to decide whether to renew or switch.",
+      "followups": [
+        "It's a few steps — I need to compare quotes, call my current provider, and then actually switch or renew"
+      ],
+      "expected_output": "Should ask whether this is a single action or multi-step. After the user confirms it's multi-step, should identify it as a project.",
+      "assertions": [
+        {
+          "name": "asks-about-complexity",
+          "type": "llm_judge",
+          "criteria": "The initial response asks the user whether this is a single step or requires multiple steps."
+        },
+        {
+          "name": "identifies-as-project-after-followup",
+          "type": "llm_judge",
+          "criteria": "After the user explains it's multiple steps, the response identifies this as a project."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "two-minute-declined",
+      "prompt": "Route this task: **Text Mike the address**\nDescription: He needs our office address for the delivery.",
+      "followups": [
+        "Not right now, I'll do it later"
+      ],
+      "expected_output": "Should suggest it's a 2-minute task. When the user declines, should move on to routing it as a single action.",
+      "assertions": [
+        {
+          "name": "suggests-two-minute-rule",
+          "type": "llm_judge",
+          "criteria": "The initial response suggests this is a 2-minute task."
+        },
+        {
+          "name": "respects-decline",
+          "type": "llm_judge",
+          "criteria": "After the user says not now, the response does NOT push them to do it. It moves on to routing the task normally."
+        },
+        {
+          "name": "moves-to-one-off-tasks",
+          "type": "llm_judge",
+          "criteria": "After the user declines the 2-minute suggestion, the response moves (or proposes to move) the task to One-Off Tasks."
+        }
+      ],
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "skill_name": "enrich-task",
+  "evals": [
+    {
+      "id": 1,
+      "name": "errands-task-obvious-label",
+      "prompt": "Enrich this task: **Pick up dry cleaning**\nDescription: From the place on High Street. Closes at 6pm.\nProject: One-Off Tasks",
+      "expected_output": "Should apply @errands label silently (without asking) and propose a due date or note the 6pm constraint. Should not invent labels.",
+      "assertions": [
+        {
+          "name": "applies-errands-label",
+          "type": "llm_judge",
+          "criteria": "The response applies or proposes an errands-related context label (e.g. @errands) without asking the user whether to add it."
+        },
+        {
+          "name": "does-not-ask-about-label",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask the user 'should I add an @errands label?' — it applies it confidently or includes it in a batch proposal."
+        },
+        {
+          "name": "proposes-batch",
+          "type": "llm_judge",
+          "criteria": "The response presents all proposed metadata changes together in one summary, not one at a time."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "waiting-for-detection",
+      "prompt": "Enrich this task: **Chase landlord about broken boiler**\nDescription: Reported it two weeks ago, no response yet. Need to follow up.\nProject: One-Off Tasks",
+      "expected_output": "Should detect this as a waiting-for situation and apply @waiting label with a note about what it's waiting on.",
+      "assertions": [
+        {
+          "name": "detects-waiting-for",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a waiting-for situation — the user is waiting on the landlord's response."
+        },
+        {
+          "name": "applies-waiting-label",
+          "type": "llm_judge",
+          "criteria": "The response proposes or applies a @waiting label (or similar waiting-for label)."
+        },
+        {
+          "name": "notes-what-waiting-on",
+          "type": "llm_judge",
+          "criteria": "The response notes or proposes noting what the task is waiting on (landlord's response about the boiler)."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "task-with-hard-deadline",
+      "prompt": "Enrich this task: **Submit tax return**\nDescription: Self-assessment for 2024-25. Deadline is January 31st. Accountant has the figures, just need to file online.\nProject: One-Off Tasks",
+      "expected_output": "Should distinguish between due date (when to work on it) and deadline (January 31st). Should set appropriate priority given the hard deadline.",
+      "assertions": [
+        {
+          "name": "identifies-deadline",
+          "type": "llm_judge",
+          "criteria": "The response identifies January 31st as a hard deadline or external due date."
+        },
+        {
+          "name": "sets-priority",
+          "type": "llm_judge",
+          "criteria": "The response proposes a priority level for this task."
+        },
+        {
+          "name": "proposes-batch",
+          "type": "llm_judge",
+          "criteria": "The response presents all proposed metadata changes together in one summary."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "someday-maybe-task",
+      "prompt": "Enrich this task: **Learn to play guitar**\nDescription: Always wanted to try. No rush.\nProject: Someday / Maybe",
+      "expected_output": "Should skip priority and due date for someday/maybe items. Should ensure the description is solid for future review.",
+      "assertions": [
+        {
+          "name": "skips-priority",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a priority for this task, or explicitly states that priority doesn't apply to someday/maybe items."
+        },
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date for this task, or explicitly states that due dates don't apply to someday/maybe items."
+        },
+        {
+          "name": "acknowledges-someday-maybe",
+          "type": "llm_judge",
+          "criteria": "The response recognises this is a someday/maybe item and treats it differently from an active task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "already-enriched-task",
+      "prompt": "Enrich this task: **Call accountant about tax return**\nDescription: Tax return is overdue, risk of fine. Accountant is James at Smith & Co.\nProject: One-Off Tasks\nPriority: p2\nLabels: @phone\nDue date: Tomorrow",
+      "expected_output": "Should recognise the task already has appropriate metadata and not propose unnecessary changes.",
+      "assertions": [
+        {
+          "name": "recognises-already-enriched",
+          "type": "llm_judge",
+          "criteria": "The response recognises that the task already has appropriate metadata (priority, label, due date) and does not propose redundant changes."
+        },
+        {
+          "name": "does-not-over-enrich",
+          "type": "llm_judge",
+          "criteria": "The response does NOT add unnecessary extra labels or change metadata that is already appropriate."
+        }
+      ],
+      "files": []
+    }
+  ]
+}

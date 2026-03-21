@@ -6,20 +6,15 @@ A composable GTD inbox-processing pipeline for Todoist. Each skill handles one s
 
 ## Skills
 
-### Existing (needs update)
+### Complete
 
-| Skill | Purpose |
-|-------|---------|
-| **clarify-task** | Sharpen name + description, check actionability (actionable / trash / reference) |
-
-### To Build (in order)
-
-| Skill | Purpose |
-|-------|---------|
-| **route-task** | GTD decision tree: 2-min skip, project check, or defer to One-Off Tasks |
-| **setup-project** | Create/merge Todoist project, assign area, first action, priority vs someday |
-| **enrich-task** | Add priority, labels, due dates, waiting-for detection |
-| **process-inbox** | Orchestrator: one task at a time through clarify → route → enrich |
+| Skill | Purpose | Evals |
+|-------|---------|-------|
+| **clarify-task** | Sharpen name + description, check actionability (actionable / trash / reference) | 6 |
+| **route-task** | GTD decision tree: 2-min skip, project check, or defer to One-Off Tasks | 5 |
+| **enrich-task** | Add priority, labels, due dates, waiting-for detection | 5 |
+| **setup-project** | Create/merge Todoist project, assign area, first action, priority vs someday | — |
+| **process-inbox** | Orchestrator: one task at a time through clarify → route → enrich | — |
 
 ### Future (not in scope)
 
