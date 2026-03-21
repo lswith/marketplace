@@ -1,0 +1,14 @@
+{
+  "name": "marketplace",
+  "owner": {
+    "name": "Luke Swithenbank"
+  },
+  "plugins": [
+    {
+      "name": "todo-list",
+      "description": "GTD-powered task management skills for Todoist",
+      "source": "./plugins/todo-list",
+      "category": "productivity"
+    }
+  ]
+}
