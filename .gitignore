@@ -5,3 +5,7 @@ node_modules/
 
 # Eval workspace outputs (generated, not source)
 *-workspace/
+
+# Claude Code local files
+.claude/settings.local.json
+.claude/worktrees/
