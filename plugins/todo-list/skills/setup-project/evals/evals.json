@@ -1,0 +1,164 @@
+{
+  "skill_name": "setup-project",
+  "evals": [
+    {
+      "id": 1,
+      "name": "clear-multi-step-new-project",
+      "prompt": "Set up a project for this task: **Plan holiday to Japan** — Want to go for two weeks in October, need to sort flights, accommodation, itinerary, and travel insurance.",
+      "expected_output": "Should propose an outcome-oriented project name, suggest an area, propose a concrete first action, and infer active status from the October timeframe. Should not create a full project plan with subtasks.",
+      "assertions": [
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes a project name or confirms one. The name should be outcome-oriented or at least a clear project title — not just the original task name verbatim."
+        },
+        {
+          "name": "suggests-area",
+          "type": "llm_judge",
+          "criteria": "The response suggests or asks about which area (top-level parent project) the project should live under."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes or asks about a concrete first action — a single step the user can take to get started."
+        },
+        {
+          "name": "does-not-create-full-plan",
+          "type": "llm_judge",
+          "criteria": "The response does NOT create multiple subtasks, sections, or a detailed project plan. At most one first action."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "merge-with-existing-project",
+      "prompt": "Set up a project for this task: **Sort out home insurance renewal** — Current policy expires next month, need to compare quotes and switch provider. I already have a project called 'Home Admin' for household paperwork.",
+      "expected_output": "Should detect the existing 'Home Admin' project and propose merging rather than creating a new project. Should ask one question at a time — merge first, then first action later.",
+      "assertions": [
+        {
+          "name": "proposes-merge",
+          "type": "llm_judge",
+          "criteria": "The response acknowledges the existing 'Home Admin' project and suggests adding this work there rather than creating a brand new project."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question — the merge question. It does not also ask about first action, area, or priority in the same response."
+        },
+        {
+          "name": "does-not-create-new-project",
+          "type": "llm_judge",
+          "criteria": "The response does not create a separate new project — it proposes using the existing one."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "someday-maybe-project",
+      "prompt": "Set up a project for this task: **Learn woodworking** — Always fancied making furniture. Maybe take a course or start with some YouTube tutorials. No rush.",
+      "expected_output": "Should recognise this as someday/maybe from the 'no rush' and 'maybe' language. Should place the project under a Someday/Maybe area.",
+      "assertions": [
+        {
+          "name": "identifies-someday-maybe",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a someday/maybe project, not an active priority. It picks up on cues like 'no rush', 'maybe', 'always fancied'."
+        },
+        {
+          "name": "places-under-someday-area",
+          "type": "llm_judge",
+          "criteria": "The response places or proposes placing the project under a Someday/Maybe area (or equivalent)."
+        },
+        {
+          "name": "still-creates-first-action",
+          "type": "llm_judge",
+          "criteria": "The response still creates or proposes a first action, even for a someday/maybe project."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "outcome-needs-refining",
+      "prompt": "Set up a project for this task: **Sort out finances** — Things are a mess, bills everywhere, no budget, credit card debt building up.",
+      "expected_output": "Should ask what outcome the user is after since 'sort out finances' is too vague for a project name. Should not assume what the project is about.",
+      "assertions": [
+        {
+          "name": "asks-about-outcome",
+          "type": "llm_judge",
+          "criteria": "The response asks the user what specific outcome they're after — it doesn't just accept 'Sort out finances' as the project name."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question, not multiple questions at once."
+        },
+        {
+          "name": "does-not-assume-scope",
+          "type": "llm_judge",
+          "criteria": "The response does not assume what the project should cover or create a project without clarifying the outcome first."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "urgent-active-project",
+      "prompt": "Set up a project for this task: **Move house** — We've exchanged contracts, completion is on April 15th. Need to sort removals, redirect mail, update address everywhere, and cancel utilities.",
+      "expected_output": "Should infer this is clearly active (concrete date, exchanged contracts). Should not ask about someday/maybe. Should propose outcome-oriented name and first action.",
+      "assertions": [
+        {
+          "name": "infers-active",
+          "type": "llm_judge",
+          "criteria": "The response treats this as an active project without asking about priority vs someday. The April 15th date and exchanged contracts make this obviously active."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes a project name that is outcome-oriented or at least clearer than just 'Move house'."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes a concrete first action."
+        },
+        {
+          "name": "does-not-create-full-plan",
+          "type": "llm_judge",
+          "criteria": "The response does NOT create multiple subtasks or a detailed project plan. At most one first action."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "project-with-obvious-area",
+      "prompt": "Set up a project for this task: **Prepare Q2 board presentation** — Need to compile financials, write the narrative, get design to make the deck, and rehearse.",
+      "expected_output": "Should clearly assign to a Work area without asking. Should propose outcome-oriented name and first action.",
+      "assertions": [
+        {
+          "name": "assigns-work-area",
+          "type": "llm_judge",
+          "criteria": "The response assigns or proposes the project under a Work area (or equivalent business/professional area) without needing to ask."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes a project name — ideally outcome-oriented."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes a concrete first action — a single step to get started."
+        },
+        {
+          "name": "does-not-ask-unnecessary-questions",
+          "type": "llm_judge",
+          "criteria": "The response does not ask questions that have obvious answers from context (e.g. doesn't ask about area when it's clearly work, doesn't ask about active vs someday for a Q2 deadline)."
+        }
+      ],
+      "files": []
+    }
+  ]
+}
