@@ -82,8 +82,9 @@ Loop through ALL tasks with the `next` or `waiting` label. For each:
 
 1. Present: **Task 1 of N:** [name] (in [project], [label], [priority], [due date or "no date"])
 2. Load the `review-task` skill using the Skill tool.
-3. Act on the skill's output.
-4. Move to the next.
+3. If the review flags a priority issue (wrong level, missing due date on P1/P2, P3/P4 with a date), load the `set-priority` skill to re-evaluate and fix it.
+4. Act on any remaining output from the review.
+5. Move to the next.
 
 ## Phase 3: Someday/Maybe Review
 
@@ -108,5 +109,5 @@ When all phases are done, give a brief summary:
 - **One item at a time.** Present one, finish it, move on. Don't show the full list or batch items.
 - **Don't get ahead of the user.** Wait for their response at each decision point before moving forward.
 - **Keep momentum.** Each item should take 10–60 seconds. If something is getting bogged down, suggest parking it.
-- **Load the right skills.** Use `review-project` for projects, `review-project-relationships` for cross-project analysis, `review-task` for next actions and waiting-for tasks, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
+- **Load the right skills.** Use `review-project` for projects, `review-project-relationships` for cross-project analysis, `review-task` for next actions and waiting-for tasks, `set-priority` when a task's priority needs re-evaluating, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
 - **Track progress.** Keep a mental count of what happened in each phase so you can give the summary at the end.

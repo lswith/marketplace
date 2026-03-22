@@ -1,0 +1,130 @@
+{
+  "skill_name": "set-priority",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set the priority for this task: 'File quarterly BAS'. It has a deadline in 4 days. Currently no priority set. The task is in the Finance area.",
+      "expected_output": "Should propose P1 with a specific due date within the next 1-2 days",
+      "assertions": [
+        {
+          "name": "proposes_p1",
+          "type": "contains",
+          "expected": "P1",
+          "description": "Should propose P1 for a task with a deadline in 4 days"
+        },
+        {
+          "name": "proposes_due_date",
+          "type": "semantic",
+          "expected": "Proposes a specific day (e.g. Monday, Tuesday, or a specific date) as the due date",
+          "description": "P1 tasks should always get a specific due date"
+        },
+        {
+          "name": "no_extended_questioning",
+          "type": "semantic",
+          "expected": "Makes a direct proposal without asking multiple clarifying questions",
+          "description": "Priority should be obvious here — no need to ask what happens if it's not done"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Set the priority for this task: 'Align budget to current lifestyle'. Description: 'Review actual spending from the last few months. Create or update a budget that reflects current income, expenses, and savings goals.' No deadline. Currently no priority. It's in a Finance project.",
+      "expected_output": "Should propose P2 with a due date suggestion this week or next",
+      "assertions": [
+        {
+          "name": "proposes_p2",
+          "type": "contains",
+          "expected": "P2",
+          "description": "Important financial task with no deadline should be P2"
+        },
+        {
+          "name": "proposes_due_date",
+          "type": "semantic",
+          "expected": "Suggests a specific day to work on this task",
+          "description": "P2 tasks should usually get a due date"
+        },
+        {
+          "name": "not_p1",
+          "type": "semantic",
+          "expected": "Does not propose P1",
+          "description": "No deadline or urgency means this shouldn't be P1"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Set the priority for this task: 'Clean up iCloud folder'. No description. No deadline. No one waiting. It's in One-Off Tasks.",
+      "expected_output": "Should propose P3 or P4 with no due date",
+      "assertions": [
+        {
+          "name": "proposes_p3_or_p4",
+          "type": "semantic",
+          "expected": "Proposes either P3 or P4",
+          "description": "Low-stakes cleanup task should be P3 or P4"
+        },
+        {
+          "name": "no_due_date",
+          "type": "semantic",
+          "expected": "Does not propose or suggest setting a due date",
+          "description": "P3/P4 tasks should not get due dates"
+        },
+        {
+          "name": "keeps_it_brief",
+          "type": "semantic",
+          "expected": "Response is short — a quick proposal, not a lengthy analysis",
+          "description": "Obvious low-priority tasks should be fast"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Re-evaluate the priority for this task: 'Research what types of insurance are required for consultants in Australia'. Currently P3, no due date. Context: the user is signing their first consulting client next week and needs insurance before starting work.",
+      "expected_output": "Should propose bumping to P1 or P2 with a specific due date",
+      "assertions": [
+        {
+          "name": "proposes_bump",
+          "type": "semantic",
+          "expected": "Proposes changing priority from P3 to P1 or P2",
+          "description": "Changed context (signing client next week) makes this urgent"
+        },
+        {
+          "name": "proposes_due_date",
+          "type": "semantic",
+          "expected": "Proposes a specific day as due date",
+          "description": "Bumped to P1/P2 means it needs a date"
+        },
+        {
+          "name": "references_context_change",
+          "type": "semantic",
+          "expected": "Mentions the client signing or starting work as the reason for the bump",
+          "description": "Should explain why the priority changed"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Re-evaluate the priority for this task: 'Message Brad Lorge to arrange a catchup'. Currently P4, no due date. No new context — just a social catchup with a friend.",
+      "expected_output": "Should confirm P4 is correct, no date, move on quickly",
+      "assertions": [
+        {
+          "name": "confirms_p4",
+          "type": "semantic",
+          "expected": "Confirms P4 is the right priority or says it looks fine as-is",
+          "description": "No reason to change priority on a social catchup"
+        },
+        {
+          "name": "no_due_date",
+          "type": "semantic",
+          "expected": "Does not propose setting a due date",
+          "description": "P4 tasks should never get dates"
+        },
+        {
+          "name": "moves_on_quickly",
+          "type": "semantic",
+          "expected": "Response is brief — confirms and moves on, no unnecessary analysis",
+          "description": "When priority is obviously fine, don't dwell on it"
+        }
+      ]
+    }
+  ]
+}

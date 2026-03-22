@@ -14,6 +14,8 @@ Plugins live under `plugins/<name>/` with a `.claude-plugin/plugin.json` manifes
 
 Skills must be **tool-agnostic** — they describe workflows, decisions, and interaction patterns without referencing specific tools or services (e.g. don't say "Todoist", "fetch from Todoist", or "set a Todoist deadline"). Only commands should reference MCP tools and service-specific APIs. This keeps skills portable and reusable regardless of the underlying tool.
 
+Skills must be **self-contained** — they never reference or load other skills. Only orchestrator commands (e.g. `process-inbox`, `weekly-review`) should compose skills by loading them in sequence. This keeps skills independent and avoids hidden coupling.
+
 ## Evals
 
 Each skill can have `evals/evals.json`. Eval runs produce `*-workspace/iteration-N/` directories with `benchmark.json` comparing with/without skill performance.

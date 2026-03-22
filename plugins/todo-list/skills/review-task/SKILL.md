@@ -50,7 +50,12 @@ Check these for all tasks. Skip any check where the answer is obvious.
 - **Staleness:** If the task has **no due date** and looks like it's been lingering, ask: "This has no due date — want to set a target?" If the task is **overdue**, flag it: "This was due [date]. Reschedule or mark as done?"
 - **Deadline:** If the task has a deadline approaching within 7 days, flag it: "Deadline is [date] — are you on track?" If the deadline has **passed**, treat it as urgent: "The deadline for this was [date]. Is it still needed, or has the window closed?" If the task name or description implies a hard external constraint (e.g. filing date, application close, event date) but no deadline is set, suggest adding one: "This sounds like it has a hard deadline — want to set one so you get the countdown?"
 - **Context label:** Every `next` task should have exactly one context label — any label that isn't a workflow label (`next`, `waiting`, `someday`). Fetch the user's labels to discover available contexts. If the context label is missing, propose one based on the task content. If the context label is wrong, propose the correct one.
-- **Priority:** Only flag **obvious mismatches** — a p4 task with a deadline within 7 days, or a p1 task that's clearly low-stakes. Don't second-guess reasonable priorities.
+- **Priority:** Actively re-evaluate whether the current priority still makes sense. Flag these situations:
+  - A P1/P2 task with no due date — it should have one
+  - A P3/P4 task with an approaching deadline — it probably needs bumping
+  - A task whose context has changed since priority was last set (e.g. a dependency resolved, a deadline appeared, importance shifted)
+  - A P3/P4 task with a due date — either bump priority or remove the date
+  If the priority needs changing, note it so the orchestrator can load the appropriate skill. If the priority looks right, don't dwell on it.
 
 ### 3. Propose Changes
 
