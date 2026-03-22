@@ -66,6 +66,16 @@ Loop through each **active project** (not top-level areas, not Someday/Maybe). F
 
 Skip areas themselves (Baby, Personal, Zoe, Work, Finance, One-Off Tasks, Someday/Maybe) — only review the projects under them.
 
+## Phase 1.5: Project Relationships
+
+After reviewing all individual projects, step back and look at the full landscape:
+
+1. Load the `review-project-relationships` skill using the Skill tool.
+2. Work through any overlaps, dependencies, or redundancies it surfaces — one at a time.
+3. Act on the user's decisions (merge projects, add notes, complete redundant projects, or skip).
+
+This phase is quick when projects are well-separated. Skip it entirely if fewer than 3 active projects remain after Phase 1.
+
 ## Phase 2: Next Actions Review
 
 Loop through ALL tasks with the `next` label. For each:
@@ -108,5 +118,5 @@ When all phases are done, give a brief summary:
 - **One item at a time.** Present one, finish it, move on. Don't show the full list or batch items.
 - **Don't get ahead of the user.** Wait for their response at each decision point before moving forward.
 - **Keep momentum.** Each item should take 10–60 seconds. If something is getting bogged down, suggest parking it.
-- **Load the right skills.** Use `review-project` for projects, `review-next-action` for next actions, `review-waiting-for` for waiting tasks, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
+- **Load the right skills.** Use `review-project` for projects, `review-project-relationships` for cross-project analysis, `review-next-action` for next actions, `review-waiting-for` for waiting tasks, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
 - **Track progress.** Keep a mental count of what happened in each phase so you can give the summary at the end.
