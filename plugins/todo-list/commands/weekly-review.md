@@ -76,25 +76,16 @@ After reviewing all individual projects, step back and look at the full landscap
 
 This phase is quick when projects are well-separated. Skip it entirely if fewer than 3 active projects remain after Phase 1.
 
-## Phase 2: Next Actions Review
+## Phase 2: Task Review
 
-Loop through ALL tasks with the `next` label. For each:
+Loop through ALL tasks with the `next` or `waiting` label. For each:
 
-1. Present: **Next action 1 of N:** [name] (in [project], [priority], [due date or "no date"])
-2. Load the `review-next-action` skill using the Skill tool.
+1. Present: **Task 1 of N:** [name] (in [project], [label], [priority], [due date or "no date"])
+2. Load the `review-task` skill using the Skill tool.
 3. Act on the skill's output.
 4. Move to the next.
 
-## Phase 3: Waiting-For Review
-
-Loop through all tasks with the `waiting` label. For each:
-
-1. Present: **Waiting 1 of N:** [name] (in [project])
-2. Load the `review-waiting-for` skill using the Skill tool.
-3. Act on the skill's output.
-4. Move to the next.
-
-## Phase 4: Someday/Maybe Review
+## Phase 3: Someday/Maybe Review
 
 Loop through projects in the Someday/Maybe area AND tasks with the `someday` label. For each:
 
@@ -109,8 +100,7 @@ When all phases are done, give a brief summary:
 
 > Done! Weekly review complete:
 > - Projects: X reviewed, Y completed, Z moved to someday
-> - Next actions: X reviewed, Y rescheduled, Z completed/deleted
-> - Waiting for: X reviewed, Y unblocked, Z follow-ups created
+> - Tasks: X reviewed, Y rescheduled, Z completed/deleted, W unblocked
 > - Someday/maybe: X reviewed, Y activated, Z deleted
 
 ## Rules
@@ -118,5 +108,5 @@ When all phases are done, give a brief summary:
 - **One item at a time.** Present one, finish it, move on. Don't show the full list or batch items.
 - **Don't get ahead of the user.** Wait for their response at each decision point before moving forward.
 - **Keep momentum.** Each item should take 10–60 seconds. If something is getting bogged down, suggest parking it.
-- **Load the right skills.** Use `review-project` for projects, `review-project-relationships` for cross-project analysis, `review-next-action` for next actions, `review-waiting-for` for waiting tasks, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
+- **Load the right skills.** Use `review-project` for projects, `review-project-relationships` for cross-project analysis, `review-task` for next actions and waiting-for tasks, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
 - **Track progress.** Keep a mental count of what happened in each phase so you can give the summary at the end.
