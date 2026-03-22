@@ -48,7 +48,7 @@ Show the task name and description (if any). Keep it brief:
 
 ### 2. Clarify
 
-Load the `clarify-task` skill using the Skill tool. The task might be:
+**Always** load the `clarify-task` skill using the Skill tool — even if the task looks clear. The skill handles actionability (trash/reference) and description enrichment, not just renaming. Never skip this step. The task might be:
 - **Actionable** → sharpen the name/description, then continue to step 3.
 - **Trash** → confirm with the user, delete it, move to the next task.
 - **Reference** → ask where to attach it, add as a comment, delete the inbox item, move to the next task.
@@ -83,6 +83,6 @@ When all tasks are processed, give a brief summary:
 - **One task at a time.** Never show the full inbox list or process multiple tasks in parallel. Present one, finish it, move on.
 - **Don't get ahead of the user.** Wait for their response at each decision point before moving forward. The rhythm is: present → ask → wait → act → confirm → next.
 - **Keep it moving.** Each task should take 30–90 seconds. If a task is getting bogged down, suggest parking it and coming back later.
-- **Skip confidently.** If a step has an obvious answer (e.g. the task is already clear, the routing is obvious), state the answer and move on rather than asking a question you already know the answer to.
+- **Skip confidently within steps, not the steps themselves.** If a question within a step has an obvious answer (e.g. the routing is obvious), state the answer and move on rather than asking. But always load every skill — `clarify-task`, `route-task`, `enrich-task` — for every task. The skills handle more than you might expect from the step name alone.
 - **Load the right skills.** Use `clarify-task` for clarification, `route-task` for routing decisions, `setup-project` for turning multi-step tasks into projects, and `enrich-task` for adding metadata. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
 - **Track progress.** Keep a mental count of what happened to each task so you can give the summary at the end.

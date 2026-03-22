@@ -24,12 +24,13 @@ The project name should describe the outcome, not the activity. Ask: "What outco
 
 If the task name already implies a clear outcome (e.g. "Plan holiday to Japan" → the outcome is obvious), propose it directly rather than asking. Only ask when the outcome is genuinely unclear.
 
-Good project names describe a finished state:
-- "Japan holiday booked and planned" not "Plan holiday"
+Good project names describe a finished state or result — never an activity:
+- "Japan holiday booked" not "Plan holiday" or "Plan holiday to Japan"
 - "New accounting system live" not "Set up accounting"
-- "Kitchen tap fixed" not "Fix tap"
+- "Kitchen tap fixed" not "Fix kitchen tap"
+- "Spare room cleared out" not "Clear out spare room"
 
-Keep it natural — don't force awkward phrasing just to make it outcome-oriented. If "Plan holiday to Japan" is clearer than "Japan holiday planned", use the clearer version.
+Always use outcome-based names. Activity-based names (starting with a verb like "Plan", "Set up", "Fix", "Organise") are for tasks, not projects. A project name should answer "what does done look like?" not "what will I be doing?"
 
 ### 2. Check for Existing Projects
 
