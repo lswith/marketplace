@@ -10,7 +10,7 @@
         {
           "name": "proposes-outcome-name",
           "type": "llm_judge",
-          "criteria": "The response proposes a project name or confirms one. The name should be outcome-oriented or at least a clear project title — not just the original task name verbatim."
+          "criteria": "The response proposes a project name that describes a finished state or result — NOT an activity. It should NOT start with a verb like 'Plan', 'Sort', 'Set up', 'Organise'. Good examples: 'Japan holiday booked', 'Two-week Japan trip planned and booked'. Bad examples: 'Plan holiday to Japan', 'Plan Japan trip'."
         },
         {
           "name": "suggests-area",
@@ -116,7 +116,7 @@
         {
           "name": "proposes-outcome-name",
           "type": "llm_judge",
-          "criteria": "The response proposes a project name that is outcome-oriented or at least clearer than just 'Move house'."
+          "criteria": "The response proposes a project name that describes a finished state — NOT an activity. It should NOT start with a verb like 'Move', 'Sort', 'Set up'. Good examples: 'Moved into new house', 'House move completed by April 15th'. Bad examples: 'Move house', 'Complete house move'."
         },
         {
           "name": "identifies-first-action",
@@ -145,7 +145,7 @@
         {
           "name": "proposes-outcome-name",
           "type": "llm_judge",
-          "criteria": "The response proposes a project name — ideally outcome-oriented."
+          "criteria": "The response proposes a project name that describes a finished state — NOT an activity. It should NOT start with a verb like 'Prepare', 'Create', 'Make'. Good examples: 'Q2 board presentation ready', 'Q2 board deck delivered'. Bad examples: 'Prepare Q2 board presentation', 'Create board deck'."
         },
         {
           "name": "identifies-first-action",
@@ -156,6 +156,35 @@
           "name": "does-not-ask-unnecessary-questions",
           "type": "llm_judge",
           "criteria": "The response does not ask questions that have obvious answers from context (e.g. doesn't ask about area when it's clearly work, doesn't ask about active vs someday for a Q2 deadline)."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "outcome-not-activity-name",
+      "prompt": "Set up a project for this task: **Organise garage** — It's full of junk, can barely get the car in. Need to clear stuff out, put up shelving, and get some storage boxes.",
+      "expected_output": "Should propose an outcome-based project name describing the finished state (e.g. 'Garage cleared and organised') rather than an activity-based name (e.g. 'Organise garage', 'Clear out garage'). Should suggest area and first action.",
+      "assertions": [
+        {
+          "name": "name-describes-finished-state",
+          "type": "llm_judge",
+          "criteria": "The proposed project name describes a finished state or result — what 'done' looks like. Good examples: 'Garage cleared and organised', 'Garage usable again'. Bad examples: 'Organise garage', 'Clear out garage', 'Sort out garage'."
+        },
+        {
+          "name": "name-does-not-start-with-verb",
+          "type": "llm_judge",
+          "criteria": "The proposed project name does NOT start with an activity verb like 'Organise', 'Clear', 'Sort', 'Set up', 'Fix', 'Tidy', 'Clean'. Project names should not be phrased as actions."
+        },
+        {
+          "name": "suggests-area",
+          "type": "llm_judge",
+          "criteria": "The response suggests or asks about which area (top-level parent project) the project should live under."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes or asks about a concrete first action — a single step the user can take to get started."
         }
       ],
       "files": []
