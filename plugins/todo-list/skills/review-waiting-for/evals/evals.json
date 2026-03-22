@@ -1,0 +1,82 @@
+{
+  "skill_name": "review-waiting-for",
+  "evals": [
+    {
+      "id": 1,
+      "name": "clearly-still-pending",
+      "prompt": "Review this waiting-for task:\n\n**Task:** Claim Claude Code Max under ABN\n**Project:** Get finances set up for consulting\n**Labels:** [waiting]\n**Priority:** p3\n**Description:** Waiting on ABN registration before this can be done.",
+      "expected_output": "Should recognise the blocker (ABN registration) is likely still pending and ask if follow-up is needed. Should NOT ask if the blocker is resolved — it's obviously still in progress.",
+      "assertions": [
+        {
+          "name": "identifies-blocker",
+          "type": "llm_judge",
+          "criteria": "The response identifies ABN registration as the blocker."
+        },
+        {
+          "name": "asks-about-follow-up",
+          "type": "llm_judge",
+          "criteria": "The response asks whether the user needs to follow up or chase anyone, rather than asking if the blocker is resolved."
+        },
+        {
+          "name": "concise",
+          "type": "llm_judge",
+          "criteria": "The response is 1-2 sentences, not a multi-paragraph review."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "blocker-might-be-resolved",
+      "prompt": "Review this waiting-for task:\n\n**Task:** Move Fastmail subscription to ABN\n**Project:** Get finances set up for consulting\n**Labels:** [waiting]\n**Priority:** p3\n**Description:** Waiting on ABN registration before this can be done. ABN was submitted three weeks ago.",
+      "expected_output": "Should ask if the ABN registration has come through, since it was submitted 3 weeks ago and might be resolved by now.",
+      "assertions": [
+        {
+          "name": "asks-if-resolved",
+          "type": "llm_judge",
+          "criteria": "The response asks whether the ABN registration has come through or been resolved, since it's been 3 weeks."
+        },
+        {
+          "name": "does-not-assume-still-waiting",
+          "type": "llm_judge",
+          "criteria": "The response does NOT assume the blocker is still pending — it asks rather than assuming."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "waiting-a-long-time",
+      "prompt": "Review this waiting-for task:\n\n**Task:** Get refund from airline\n**Project:** One-Off Tasks\n**Labels:** [waiting]\n**Priority:** p4\n**Description:** Filed a refund claim for cancelled flight. Airline said 6-8 weeks. It's been 4 months.",
+      "expected_output": "Should flag that this has been waiting much longer than expected (4 months vs 6-8 weeks) and ask if it's still worth tracking or if the user wants to chase.",
+      "assertions": [
+        {
+          "name": "flags-staleness",
+          "type": "llm_judge",
+          "criteria": "The response flags that the task has been waiting significantly longer than the expected timeline (4 months vs 6-8 weeks)."
+        },
+        {
+          "name": "offers-action-options",
+          "type": "llm_judge",
+          "criteria": "The response offers options: chase/follow up, keep waiting, or drop it."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "clearly-valid-recent-blocker",
+      "prompt": "Review this waiting-for task:\n\n**Task:** Research how to employ Zoe in the Pty Ltd\n**Project:** Employ Zoe in the Pty Ltd to optimise household tax\n**Labels:** [waiting]\n**Priority:** p4\n**Description:** Waiting on company setup first. Pty Ltd registration submitted last week.",
+      "expected_output": "Should recognise the blocker is clearly still valid (submitted last week) and move on quickly without unnecessary questions.",
+      "assertions": [
+        {
+          "name": "quick-pass",
+          "type": "llm_judge",
+          "criteria": "The response is brief — acknowledges the blocker is recent/valid and either moves on or asks a quick follow-up question. Does not over-investigate."
+        },
+        {
+          "name": "does-not-flag-staleness",
+          "type": "llm_judge",
+          "criteria": "The response does NOT flag staleness or suggest dropping the task, since the blocker was submitted recently."
+        }
+      ]
+    }
+  ]
+}

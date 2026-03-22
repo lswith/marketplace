@@ -1,0 +1,113 @@
+{
+  "skill_name": "review-next-action",
+  "evals": [
+    {
+      "id": 1,
+      "name": "healthy-task-quick-pass",
+      "prompt": "Review this next action:\n\n**Task:** Call dentist to book cleaning\n**Project:** Health checkups done\n**Labels:** [next]\n**Priority:** p3\n**Due date:** 2026-03-27\n**Description:** Regular 6-month cleaning. Dentist is Dr Park at Sydney Dental, number is on the fridge.",
+      "expected_output": "Should say 'Looks good' and move on quickly. Task is clear, relevant, has a due date, correct priority, and appropriate labels.",
+      "assertions": [
+        {
+          "name": "confirms-healthy",
+          "type": "llm_judge",
+          "criteria": "The response confirms the task is fine without proposing any changes. Something like 'Looks good' — short and quick."
+        },
+        {
+          "name": "no-unnecessary-changes",
+          "type": "llm_judge",
+          "criteria": "The response does not suggest changing priority, labels, due date, or anything else."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "no-due-date-lingering",
+      "prompt": "Review this next action:\n\n**Task:** Research best savings accounts\n**Project:** Personal savings optimised\n**Labels:** [next]\n**Priority:** p3\n**Due date:** (none)\n**Description:** Compare rates across major banks. Look at ING, UBank, and Macquarie.",
+      "expected_output": "Should flag the missing due date and ask whether the user wants to set a target date. Should not rename or re-clarify the task.",
+      "assertions": [
+        {
+          "name": "flags-missing-due-date",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task has no due date and asks whether to set one."
+        },
+        {
+          "name": "does-not-rename",
+          "type": "llm_judge",
+          "criteria": "The response does not suggest renaming or re-clarifying the task name."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "overdue-task",
+      "prompt": "Review this next action:\n\n**Task:** Email real estate agent about shower issues\n**Project:** One-Off Tasks\n**Labels:** [next]\n**Priority:** p3\n**Due date:** 2026-03-10 (overdue)\n**Description:** Rusted showerhead needs replacing. Also mold that needs addressing.",
+      "expected_output": "Should flag the task is overdue and ask whether to reschedule or mark as done.",
+      "assertions": [
+        {
+          "name": "flags-overdue",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task is overdue (was due 2026-03-10) and asks whether to reschedule or complete it."
+        },
+        {
+          "name": "offers-both-options",
+          "type": "llm_judge",
+          "criteria": "The response offers both rescheduling and completing/marking as done as options."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "blocked-should-be-waiting",
+      "prompt": "Review this next action:\n\n**Task:** Claim Claude Code Max under ABN\n**Project:** Get finances set up for consulting\n**Labels:** [next]\n**Priority:** p3\n**Due date:** (none)\n**Description:** Waiting on ABN registration before this can be done.",
+      "expected_output": "Should flag that the task is blocked (waiting on ABN registration) and suggest changing the label from next to waiting.",
+      "assertions": [
+        {
+          "name": "identifies-blocked",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task is blocked on ABN registration based on the description."
+        },
+        {
+          "name": "suggests-waiting-label",
+          "type": "llm_judge",
+          "criteria": "The response suggests changing the label from next to waiting."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "wrong-priority",
+      "prompt": "Review this next action:\n\n**Task:** Setup Pty Ltd for consulting\n**Project:** Get finances set up for consulting\n**Labels:** [next]\n**Priority:** p4\n**Due date:** 2026-03-23\n**Description:** Need this done ASAP — blocks ABN registration, insurance, and claiming expenses. Multiple other tasks waiting on this.",
+      "expected_output": "Should flag the priority mismatch — p4 for a task due tomorrow that blocks multiple other tasks. Should suggest bumping to p1 or p2.",
+      "assertions": [
+        {
+          "name": "flags-priority-mismatch",
+          "type": "llm_judge",
+          "criteria": "The response identifies that p4 is too low for a task that is due very soon and blocks other work."
+        },
+        {
+          "name": "suggests-higher-priority",
+          "type": "llm_judge",
+          "criteria": "The response suggests increasing the priority to p1 or p2."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "no-longer-relevant",
+      "prompt": "Review this next action:\n\n**Task:** Apply to Antler startup accelerator\n**Project:** One-Off Tasks\n**Labels:** [next]\n**Priority:** p3\n**Due date:** (none)\n**Description:** Katie Fry suggested this. Decided not to pursue yet as consulting is a lower-friction first step. Revisit if consulting doesn't pan out.",
+      "expected_output": "Should flag that the task description says the user decided not to pursue this. Should ask whether to delete, complete, or move to someday.",
+      "assertions": [
+        {
+          "name": "flags-not-relevant",
+          "type": "llm_judge",
+          "criteria": "The response identifies that the description says this was decided against / not being pursued yet."
+        },
+        {
+          "name": "offers-someday-option",
+          "type": "llm_judge",
+          "criteria": "The response offers moving to someday/maybe as one of the options (alongside delete or complete)."
+        }
+      ]
+    }
+  ]
+}
