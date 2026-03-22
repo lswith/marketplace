@@ -27,7 +27,7 @@ You will be given a task with a name, description, and possibly some existing me
    | **Priority** | For active tasks (not someday/maybe). Decide based on two factors: **urgency** (is there a time constraint?) and **importance** (what are the consequences of not doing it?). Use p1 for urgent + important (legal deadlines, things that block others), p2 for important but not urgent (significant tasks with flexible timing), p3 for routine tasks you'd like to get done, p4 for low-stakes nice-to-haves. When in doubt, lean toward p3 — most tasks aren't urgent. |
    | **Due date** | If the context implies a deadline or a sensible target date. Don't invent due dates for tasks that don't need them. |
    | **Deadline** | If there's a hard external deadline distinct from the due date (e.g. tax filing date, event date, submission cutoff). The due date is when you plan to work on it; the deadline is when it absolutely must be done. |
-   | **Context labels** | Fetch the user's existing labels from Todoist first. Apply silently if obvious from the task — if someone needs to "pick up dry cleaning" and they have an errand-type label, apply it. Don't ask, just apply. Never invent new labels — only use ones that already exist. |
+   | **Context labels** | Fetch the user's existing labels first. Labels fall into two groups: **workflow labels** (`next`, `waiting`, `someday`) control task state; **context labels** (everything else) indicate where or how the work happens. Every `next` task should have exactly one context label. Apply silently if obvious from the task content — don't ask, just apply. If the task has the `next` label and no context label is obvious, ask which context fits. Never invent new labels — only use ones that already exist. |
    | **Waiting-for** | If the task is blocked — by another person, another task, or an event that hasn't happened yet. Apply the user's waiting label (fetch it from their existing labels). Search for the task or person it's waiting on and, if found, link them using a Todoist comment mentioning the blocking task/person. Also note the blocker in the description so it's visible at a glance. |
 
 3. **Handle someday/maybe tasks differently.** If the task is in a someday/maybe project or has a someday-type label:
@@ -57,7 +57,7 @@ You will be given a task with a name, description, and possibly some existing me
 - Don't touch the task name or description unless you spot a waiting-for situation that needs noting in the description.
 - Only prompt for attributes that are relevant to this specific task.
 - One confirmation round max. Propose everything together, get a yes/no, apply.
-- Apply context labels silently when they're obvious — don't ask "should I add @errands?" for a task called "Pick up dry cleaning".
+- Apply context labels silently when they're obvious. Every `next` task should end up with exactly one context label (any label that isn't `next`, `waiting`, or `someday`).
 - Never invent labels. Fetch the user's existing labels and only use those.
 - Keep the interaction tight. This is a quick metadata pass, not a planning session.
 - If the task already has all the metadata it needs, say so and move on.

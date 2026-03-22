@@ -39,7 +39,7 @@ Has this task been sitting without progress?
 Are the labels correct for this task's current state?
 
 - If the description or context suggests the task is **blocked on someone or something** (e.g. "waiting for reply", "need X first", "after Y is done"), it shouldn't be `next` — propose switching to `waiting`: "This sounds blocked — should it be waiting instead of next?"
-- If a context label is obviously wrong (e.g. `errands` on a computer task) or obviously missing (e.g. no `home` label on "mow the lawn"), propose the fix silently as part of the batch in step 5.
+- Every `next` task should have exactly one **context label** — any label that isn't a workflow label (`next`, `waiting`, `someday`). Fetch the user's labels to discover available contexts. If the context label is missing, propose one based on the task content. If the context label is wrong for the task, propose the correct one. Include context label fixes silently in the batch in step 5.
 - If labels look correct, skip this check.
 
 ### 4. Priority Check

@@ -33,15 +33,15 @@ Based on the context, determine the most likely state:
 
 ### 3. Act on the Answer
 
-- **Blocker resolved** → Remove the `waiting` label, add the `next` label. Confirm: "Blocker's cleared — this becomes a next action. Still the right task, or has it changed?"
+- **Blocker resolved** → Remove the `waiting` label, add the `next` label. Also fetch the user's labels, identify available context labels (everything that isn't `next`, `waiting`, or `someday`), and add the one that best fits the task content. Confirm: "Blocker's cleared — this becomes a next action. Still the right task, or has it changed?"
 - **Still waiting, no follow-up needed** → Leave as is. Move on.
-- **Still waiting, follow-up needed** → Create a follow-up task in the same project with a clear name (e.g. "Chase accountant on ABN registration status"). Add the `next` label to the follow-up. Leave the original waiting task as-is.
+- **Still waiting, follow-up needed** → Create a follow-up task in the same project with a clear name (e.g. "Chase accountant on ABN registration status"). Add the `next` label and an appropriate context label to the follow-up. Leave the original waiting task as-is.
 - **No longer worth tracking** → Confirm deletion: "OK to delete this?"
 
 ## Rules
 
 - One question per task. Ask, wait, then act.
 - Don't change the task name or description — you're just checking status and acting on it.
-- If creating a follow-up task, keep it simple. Just a clear name and the `next` label. Don't run enrichment on it during the review.
+- If creating a follow-up task, keep it simple. Just a clear name, the `next` label, and a context label. Don't run enrichment on it during the review.
 - Don't narrate your process. Just ask the relevant question.
 - Keep it fast. This is a status check, not a planning session.
