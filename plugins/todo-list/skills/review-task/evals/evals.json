@@ -192,6 +192,60 @@
       ]
     },
     {
+      "id": 12,
+      "name": "deadline-approaching",
+      "prompt": "Review this task:\n\n**Task:** Submit conference talk proposal\n**Project:** One-Off Tasks\n**Labels:** [next, desk]\n**Priority:** p3\n**Due date:** (none)\n**Deadline:** 2026-03-26\n**Description:** CFP for PyCon AU. Need to write an abstract and bio.",
+      "expected_output": "Should flag the approaching deadline (4 days away) and ask if the user is on track. Should not flag other issues — the task has a context label and reasonable priority.",
+      "assertions": [
+        {
+          "name": "flags-approaching-deadline",
+          "type": "llm_judge",
+          "criteria": "The response flags that the deadline is approaching (within 7 days) and asks whether the user is on track."
+        },
+        {
+          "name": "does-not-over-flag",
+          "type": "llm_judge",
+          "criteria": "The response does not flag priority, context label, or other issues. The deadline check is the only concern raised."
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "deadline-passed",
+      "prompt": "Review this task:\n\n**Task:** Apply for small business grant\n**Project:** Get finances set up for consulting\n**Labels:** [next, desk]\n**Priority:** p2\n**Due date:** 2026-03-15\n**Deadline:** 2026-03-18\n**Description:** State government grant for new businesses. Application form is on the Service NSW website.",
+      "expected_output": "Should urgently flag that the deadline has passed (was March 18) and ask whether the task is still needed or the window has closed.",
+      "assertions": [
+        {
+          "name": "flags-passed-deadline",
+          "type": "llm_judge",
+          "criteria": "The response identifies that the deadline (March 18) has passed and treats this as urgent."
+        },
+        {
+          "name": "asks-if-window-closed",
+          "type": "llm_judge",
+          "criteria": "The response asks whether the task is still needed or the window has closed — offering deletion/completion as an option."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "implied-deadline-not-set",
+      "prompt": "Review this task:\n\n**Task:** Register for the Sydney marathon\n**Project:** One-Off Tasks\n**Labels:** [next, desk]\n**Priority:** p3\n**Due date:** (none)\n**Deadline:** (none)\n**Description:** Marathon is June 14. Registration usually closes a month before. Need to sign up online.",
+      "expected_output": "Should suggest adding a deadline since the description implies a hard external constraint (registration closing ~May 14). Should propose a deadline so the countdown is visible.",
+      "assertions": [
+        {
+          "name": "suggests-adding-deadline",
+          "type": "llm_judge",
+          "criteria": "The response identifies the hard external constraint from the description and suggests setting a deadline so the countdown is visible."
+        },
+        {
+          "name": "reasonable-deadline-date",
+          "type": "llm_judge",
+          "criteria": "The suggested deadline is reasonable — around mid-May (a month before June 14) based on the registration closing window mentioned in the description."
+        }
+      ]
+    },
+    {
       "id": 11,
       "name": "waiting-clearly-valid-recent-blocker",
       "prompt": "Review this task:\n\n**Task:** Research how to employ Zoe in the Pty Ltd\n**Project:** Employ Zoe in the Pty Ltd to optimise household tax\n**Labels:** [waiting]\n**Priority:** p4\n**Description:** Waiting on company setup first. Pty Ltd registration submitted last week.",

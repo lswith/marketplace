@@ -120,6 +120,47 @@
       ]
     },
     {
+      "id": 8,
+      "name": "looming-deadline-minimal-progress",
+      "prompt": "Review this project:\n\n**Project:** Small business grant application submitted\n**Area:** Finance\n**Tasks:**\n- \"Write business plan\" p3, no due date, deadline: 2026-04-05\n- \"Get two references\" p4, no due date\n- \"Fill in online application form\" p4, no due date",
+      "expected_output": "Should flag the approaching deadline on 'Write business plan' (within 14 days) even though the project has tasks and isn't technically stale. Should also flag that no task has a 'next' label.",
+      "assertions": [
+        {
+          "name": "flags-approaching-deadline",
+          "type": "llm_judge",
+          "criteria": "The response flags the approaching deadline on 'Write business plan' (April 5) and asks whether the project is getting enough attention."
+        },
+        {
+          "name": "flags-no-next-action",
+          "type": "llm_judge",
+          "criteria": "The response identifies that no task has a 'next' label."
+        },
+        {
+          "name": "does-not-suggest-someday",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest moving to someday/maybe — there's a looming deadline, so the project should stay active."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "healthy-project-with-distant-deadline",
+      "prompt": "Review this project:\n\n**Project:** Tax return lodged\n**Area:** Finance\n**Tasks:**\n- \"Gather receipts from email\" [next] p3, due: 2026-04-01\n- \"Book appointment with accountant\" p3, deadline: 2026-10-31\n- \"Review and sign return\" p4",
+      "expected_output": "Should say 'Looks good' and move on. The deadline is October 31 (far away), the project has a clear outcome and an active next action. No flags needed.",
+      "assertions": [
+        {
+          "name": "confirms-healthy",
+          "type": "llm_judge",
+          "criteria": "The response confirms the project is healthy without flagging deadline concerns — the October 31 deadline is far away."
+        },
+        {
+          "name": "no-unnecessary-flags",
+          "type": "llm_judge",
+          "criteria": "The response does not raise concerns about the deadline, staleness, or project name."
+        }
+      ]
+    },
+    {
       "id": 7,
       "name": "descriptive-but-activity-based-name",
       "prompt": "Review this project:\n\n**Project:** Build a warm consulting network to generate referrals and collaborations\n**Area:** Work\n**Tasks:**\n- \"Message Brad to arrange a catchup\" [next] p4\n- \"Message Alex about energy trading opportunities\" [next] p4\n- \"Attend local startup meetup\" p4",

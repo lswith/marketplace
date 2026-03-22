@@ -13,7 +13,7 @@ You are helping the user review a single task as part of a weekly review. The ta
 
 ## Input
 
-You will be given a task including its name, description, project, labels, priority, and due date.
+You will be given a task including its name, description, project, labels, priority, due date, and deadline.
 
 ## Process
 
@@ -48,8 +48,9 @@ Has the blocker cleared?
 Check these for all tasks. Skip any check where the answer is obvious.
 
 - **Staleness:** If the task has **no due date** and looks like it's been lingering, ask: "This has no due date — want to set a target?" If the task is **overdue**, flag it: "This was due [date]. Reschedule or mark as done?"
+- **Deadline:** If the task has a deadline approaching within 7 days, flag it: "Deadline is [date] — are you on track?" If the deadline has **passed**, treat it as urgent: "The deadline for this was [date]. Is it still needed, or has the window closed?" If the task name or description implies a hard external constraint (e.g. filing date, application close, event date) but no deadline is set, suggest adding one: "This sounds like it has a hard deadline — want to set one so you get the countdown?"
 - **Context label:** Every `next` task should have exactly one context label — any label that isn't a workflow label (`next`, `waiting`, `someday`). Fetch the user's labels to discover available contexts. If the context label is missing, propose one based on the task content. If the context label is wrong, propose the correct one.
-- **Priority:** Only flag **obvious mismatches** — a p4 task with a hard deadline next week, or a p1 task that's clearly low-stakes. Don't second-guess reasonable priorities.
+- **Priority:** Only flag **obvious mismatches** — a p4 task with a deadline within 7 days, or a p1 task that's clearly low-stakes. Don't second-guess reasonable priorities.
 
 ### 3. Propose Changes
 
@@ -58,7 +59,8 @@ If any checks surfaced issues, propose all changes together in one batch:
 > Here's what I'd change:
 > - **Priority:** p3 -> p2
 > - **Label:** add @errands
-> - **Due date:** set to Friday
+> - **Due date:** set to Wednesday
+> - **Deadline:** set to Friday (hard external cutoff)
 >
 > Sound good?
 

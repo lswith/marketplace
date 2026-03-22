@@ -114,6 +114,11 @@
           "criteria": "The response treats this as an active project without asking about priority vs someday. The April 15th date and exchanged contracts make this obviously active."
         },
         {
+          "name": "sets-deadline-on-first-action",
+          "type": "llm_judge",
+          "criteria": "The response sets or proposes setting a deadline on the first action, since April 15th is a hard external date (completion date for the house move). The deadline should be picked up from context without asking separately."
+        },
+        {
           "name": "proposes-outcome-name",
           "type": "llm_judge",
           "criteria": "The response proposes a project name that describes a finished state — NOT an activity. It should NOT start with a verb like 'Move', 'Sort', 'Set up'. Good examples: 'Moved into new house', 'House move completed by April 15th'. Bad examples: 'Move house', 'Complete house move'."
@@ -156,6 +161,35 @@
           "name": "does-not-ask-unnecessary-questions",
           "type": "llm_judge",
           "criteria": "The response does not ask questions that have obvious answers from context (e.g. doesn't ask about area when it's clearly work, doesn't ask about active vs someday for a Q2 deadline)."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "project-with-hard-external-deadline",
+      "prompt": "Set up a project for this task: **Apply for the small business grant** — State government grant for new businesses, up to $10k. Applications close April 30. Need to write a business plan, get two references, and fill in the online form.",
+      "expected_output": "Should propose an outcome-oriented name, identify this as active (hard deadline), set a deadline of April 30 on the first action, and propose a concrete first step. Should not ask about active vs someday — the closing date makes it clearly active.",
+      "assertions": [
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes a project name that describes a finished state — NOT an activity. It should NOT start with a verb like 'Apply'. Good examples: 'Small business grant application submitted', 'State government grant secured'. Bad examples: 'Apply for grant', 'Small business grant application'."
+        },
+        {
+          "name": "sets-deadline-april-30",
+          "type": "llm_judge",
+          "criteria": "The response sets or proposes setting a deadline of April 30 on the first action, since applications close on that date. This should be picked up from context without asking separately about deadlines."
+        },
+        {
+          "name": "infers-active",
+          "type": "llm_judge",
+          "criteria": "The response treats this as an active project without asking about priority vs someday. The April 30 application closing date makes it clearly active."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes a concrete first action — a single step to get started."
         }
       ],
       "files": []

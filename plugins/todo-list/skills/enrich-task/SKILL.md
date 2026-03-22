@@ -25,19 +25,19 @@ You will be given a task with a name, description, and possibly some existing me
    | Attribute | When to add |
    |-----------|-------------|
    | **Priority** | For active tasks (not someday/maybe). Decide based on two factors: **urgency** (is there a time constraint?) and **importance** (what are the consequences of not doing it?). Use p1 for urgent + important (legal deadlines, things that block others), p2 for important but not urgent (significant tasks with flexible timing), p3 for routine tasks you'd like to get done, p4 for low-stakes nice-to-haves. When in doubt, lean toward p3 — most tasks aren't urgent. |
-   | **Due date** | If the context implies a deadline or a sensible target date. Don't invent due dates for tasks that don't need them. |
-   | **Deadline** | If there's a hard external deadline distinct from the due date (e.g. tax filing date, event date, submission cutoff). The due date is when you plan to work on it; the deadline is when it absolutely must be done. |
+   | **Due date** | When you plan to work on the task — a target date, not a hard constraint. If the user mentions a hard external constraint, that belongs in the Deadline field instead. Don't invent due dates for tasks that don't need them. |
+   | **Deadline** | If there's a hard external date the task must be done by (e.g. tax filing date, event date, submission cutoff, application closing date). Deadlines are distinct from due dates — a task can have both. A countdown appears when the deadline is within 7 days, which helps surface urgency naturally. Only works for one-time tasks (not recurring). |
    | **Context labels** | Fetch the user's existing labels first. Labels fall into two groups: **workflow labels** (`next`, `waiting`, `someday`) control task state; **context labels** (everything else) indicate where or how the work happens. Every `next` task should have exactly one context label. Apply silently if obvious from the task content — don't ask, just apply. If the task has the `next` label and no context label is obvious, ask which context fits. Never invent new labels — only use ones that already exist. |
-   | **Waiting-for** | If the task is blocked — by another person, another task, or an event that hasn't happened yet. Apply the user's waiting label (fetch it from their existing labels). Search for the task or person it's waiting on and, if found, link them using a Todoist comment mentioning the blocking task/person. Also note the blocker in the description so it's visible at a glance. |
+   | **Waiting-for** | If the task is blocked — by another person, another task, or an event that hasn't happened yet. Apply the user's waiting label (fetch it from their existing labels). Search for the task or person it's waiting on and, if found, link them using a comment mentioning the blocking task/person. Also note the blocker in the description so it's visible at a glance. |
 
 3. **Handle someday/maybe tasks differently.** If the task is in a someday/maybe project or has a someday-type label:
    - Make sure the name and description are solid. These tasks get revisited weeks or months later and need to stand on their own without context.
-   - Skip priority and due date — they don't apply to someday/maybe items.
+   - Skip priority and due date — they don't apply to someday/maybe items. Exception: if the task has a hard external deadline (e.g. application closing date, grant submission window), still set the deadline — the countdown will be visible if the user later activates the task, and it prevents the window from closing unnoticed.
    - Context labels are still fine if obvious.
 
 4. **Strip stale labels.** If the task has generic labels that don't map to a real workflow context (e.g. leftover tags from import, vague category labels that nobody filters by), remove them. Only keep labels that serve a filtering or workflow purpose.
 
-5. **Fetch existing labels.** Before applying any labels, fetch the user's labels from Todoist. Never invent new labels — only use ones that already exist.
+5. **Fetch existing labels.** Before applying any labels, fetch the user's existing labels. Never invent new labels — only use ones that already exist.
 
 6. **Propose a batch.** Present all proposed metadata changes together in one clear summary:
 
@@ -45,6 +45,7 @@ You will be given a task with a name, description, and possibly some existing me
    > - **Priority:** p2
    > - **Label:** @errands
    > - **Due date:** Friday
+   > - **Deadline:** March 31 (hard external cutoff)
    >
    > Sound good?
 

@@ -5,7 +5,7 @@
       "id": 1,
       "name": "obvious-context-labels",
       "prompt": "Enrich this task: **Pick up dry cleaning** — In the One-Off Tasks project, no labels or priority set. Description: 'Suits from the place on High Street, ready after 3pm.'",
-      "expected_output": "Should fetch labels from Todoist (next, someday, home, errand, waiting), then silently apply 'errand' since picking up dry cleaning is an errand. Should propose priority. Should NOT use labels that don't exist.",
+      "expected_output": "Should fetch labels from the task manager (next, someday, home, errand, waiting), then silently apply 'errand' since picking up dry cleaning is an errand. Should propose priority. Should NOT use labels that don't exist.",
       "assertions": [
         {
           "name": "applies-errand-label",
@@ -15,7 +15,7 @@
         {
           "name": "uses-only-fetched-labels",
           "type": "llm_judge",
-          "criteria": "The response only uses labels that exist in the user's Todoist. It does NOT suggest labels like @computer, @phone, or @errands that weren't fetched."
+          "criteria": "The response only uses labels that exist in the user's task manager. It does NOT suggest labels like @computer, @phone, or @errands that weren't fetched."
         },
         {
           "name": "proposes-priority",
@@ -39,12 +39,12 @@
         {
           "name": "sets-deadline",
           "type": "llm_judge",
-          "criteria": "The response proposes a deadline or hard due date of 31 January 2026."
+          "criteria": "The response proposes setting a deadline (not just a due date) of 31 January 2026. The deadline should be clearly identified as a hard external constraint, distinct from any due date."
         },
         {
-          "name": "suggests-earlier-due-date",
+          "name": "distinguishes-deadline-from-due-date",
           "type": "llm_judge",
-          "criteria": "The response suggests a due date before the deadline — the date to actually work on it."
+          "criteria": "The response treats the deadline as a separate field from the due date. It does not conflate the two — if a due date is proposed, it should be presented as a separate line item from the deadline."
         },
         {
           "name": "sets-high-priority",
@@ -71,14 +71,43 @@
           "criteria": "The response does NOT propose a priority level."
         },
         {
-          "name": "skips-due-date",
+          "name": "skips-due-date-and-deadline",
           "type": "llm_judge",
-          "criteria": "The response does NOT propose a due date or deadline."
+          "criteria": "The response does NOT propose a due date or deadline. There is no hard external constraint for learning guitar, so no deadline should be set."
         },
         {
           "name": "focuses-on-description-quality",
           "type": "llm_judge",
           "criteria": "The response focuses on ensuring the name and description stand on their own for future revisiting."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "someday-maybe-with-hard-deadline",
+      "prompt": "Enrich this task: **Apply for the Smith Foundation grant** — In a project under the Someday/Maybe area. Description: 'Up to $10k for community projects. Applications close 15 June 2026. Would need to write a proposal and get two references.'",
+      "expected_output": "Should skip priority and due date (it's someday/maybe), but SHOULD set a deadline of 15 June 2026 because there's a hard external closing date. The countdown will be visible if the user later activates the task.",
+      "assertions": [
+        {
+          "name": "skips-priority",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a priority level — this is a someday/maybe item."
+        },
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date — this is a someday/maybe item."
+        },
+        {
+          "name": "sets-deadline-despite-someday",
+          "type": "llm_judge",
+          "criteria": "The response DOES propose setting a deadline of 15 June 2026 (the application closing date), even though the task is someday/maybe. The skill should recognise that hard external deadlines are the exception to the 'skip dates for someday' rule."
+        },
+        {
+          "name": "explains-deadline-rationale",
+          "type": "llm_judge",
+          "criteria": "The response explains or implies why a deadline is being set despite the task being someday/maybe — e.g. mentioning the countdown, not missing the window, or the external closing date."
         }
       ],
       "files": []
@@ -97,12 +126,12 @@
         {
           "name": "applies-waiting-label",
           "type": "llm_judge",
-          "criteria": "The response proposes applying the 'waiting' label (the actual label name from the user's Todoist, not an invented one)."
+          "criteria": "The response proposes applying the 'waiting' label (the actual label name from the user's task manager, not an invented one)."
         },
         {
           "name": "uses-only-fetched-labels",
           "type": "llm_judge",
-          "criteria": "The response does NOT suggest labels that don't exist (like @computer). Only uses labels available in the user's Todoist."
+          "criteria": "The response does NOT suggest labels that don't exist (like @computer). Only uses labels available in the user's task manager."
         }
       ],
       "files": []

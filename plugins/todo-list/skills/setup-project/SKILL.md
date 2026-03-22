@@ -1,7 +1,7 @@
 ---
 name: setup-project
 description: >
-  Convert a multi-step task into a Todoist project. Helps define the outcome,
+  Convert a multi-step task into a project. Helps define the outcome,
   find or create the right project, assign it to an area, identify the first
   action, and decide if it's a priority or someday/maybe. Use when a task has
   been identified as needing multiple steps to complete — it's a project, not
@@ -10,7 +10,7 @@ description: >
 
 # Setup Project
 
-You are helping the user turn a multi-step task into a properly structured Todoist project. The task has already been clarified and identified as needing more than one step. Your job is to set up the project so the user can start working on it.
+You are helping the user turn a multi-step task into a properly structured project. The task has already been clarified and identified as needing more than one step. Your job is to set up the project so the user can start working on it.
 
 ## Input
 
@@ -65,6 +65,8 @@ The first action should be:
 
 Create this as a task in the new project.
 
+If the user mentioned a hard external date during the conversation (e.g. "filing deadline is April 15", "the event is June 12", "applications close March 31"), set a **deadline** on the first action so the countdown is visible. Don't ask about deadlines separately — just pick them up from what was already said.
+
 ### 5. Priority or Someday/Maybe
 
 Ask: "Is this something you're tackling now, or more of a someday thing?"
@@ -73,7 +75,7 @@ Ask: "Is this something you're tackling now, or more of a someday thing?"
 - **Someday/maybe** → move the project under a top-level "Someday/Maybe" area. Create this area if it doesn't exist. The first action is still there for when the user activates the project later.
 
 If it's obviously one or the other from context, state it confidently rather than asking:
-- Any specific timeframe or date ("in October", "before the end of the month", "next year") → clearly active
+- Any specific timeframe, date, or hard external deadline ("in October", "before the end of the month", "next year", "filing deadline is April 15") → clearly active. If the date is a hard external constraint, set it as a deadline on the first action.
 - "Maybe one day I'd like to...", "no rush", "always wanted to" with no timeframe → clearly someday
 
 ### 6. Clean Up
