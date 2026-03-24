@@ -63,7 +63,8 @@ Loop through each **active outcome** — both sub-projects and parent tasks (not
 2. Load the `review-outcome` skill using the Skill tool.
 3. Act on the skill's output (complete outcome, create next action, defer to someday, update name, or confirm).
 4. **If the outcome name or scope changed**, the outcome's existing next action may no longer be the right one. Load the `clarify-task` skill on the outcome's current next action to re-clarify it before moving on.
-5. Move to the next outcome.
+5. Fetch the outcome's completed tasks, then load the `restructure-outcome` skill using the Skill tool — passing both active and completed task counts — to check whether the container type (parent task vs project) still fits. The completed task history is essential: a project with 2 remaining tasks but 20 completed ones should stay a project. If the skill returns silently (no mismatch), continue.
+6. Move to the next outcome.
 
 Skip top-level area projects themselves (Baby, Personal, Zoe, Work, Finance) — only review the outcomes under them.
 
@@ -110,5 +111,5 @@ When all phases are done, give a brief summary:
 - **One item at a time.** Present one, finish it, move on. Don't show the full list or batch items.
 - **Don't get ahead of the user.** Wait for their response at each decision point before moving forward.
 - **Keep momentum.** Each item should take 10–60 seconds. If something is getting bogged down, suggest parking it.
-- **Load the right skills.** Use `review-outcome` for outcomes (projects and parent tasks), `review-project-relationships` for cross-outcome analysis, `review-task` for next actions and waiting-for tasks, `set-priority` when a task's priority needs re-evaluating, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
+- **Load the right skills.** Use `review-outcome` for outcomes (projects and parent tasks), `restructure-outcome` to check whether an outcome's container type still fits, `review-project-relationships` for cross-outcome analysis, `review-task` for next actions and waiting-for tasks, `set-priority` when a task's priority needs re-evaluating, `review-someday-maybe` for someday items, and `enrich-task` for newly activated items. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
 - **Track progress.** Keep a mental count of what happened in each phase so you can give the summary at the end.
