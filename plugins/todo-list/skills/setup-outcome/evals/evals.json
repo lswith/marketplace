@@ -264,6 +264,40 @@
     },
     {
       "id": 10,
+      "name": "strips-stale-metadata-on-conversion",
+      "prompt": "Set up an outcome for this task: **Fix the leaking shower** — The shower head drips constantly. Need to replace the washer and maybe the cartridge. Currently has priority p2, due date of next Monday, and labels 'next' and 'home'. Container type: parent task.",
+      "expected_output": "Should strip the scheduling metadata (priority, due date, next/context labels) silently during conversion since they don't belong on an outcome container. Should still propose an outcome name, area, and first action as normal.",
+      "assertions": [
+        {
+          "name": "strips-priority",
+          "type": "llm_judge",
+          "criteria": "The response strips or resets the priority (from p2 to p4/default) as part of converting the task to a parent task. This should happen silently without asking the user."
+        },
+        {
+          "name": "strips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response removes the due date as part of the conversion. Due dates on parent tasks create noise in the Today view."
+        },
+        {
+          "name": "strips-next-and-context-labels",
+          "type": "llm_judge",
+          "criteria": "The response removes the 'next' and 'home' labels as part of the conversion. These are action-level labels that don't belong on an outcome container."
+        },
+        {
+          "name": "does-not-ask-about-stripping",
+          "type": "llm_judge",
+          "criteria": "The metadata stripping happens silently as part of the conversion — the response does NOT ask the user whether to remove the priority, due date, or labels."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response still proposes an outcome name describing a finished state, despite the metadata cleanup."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
       "name": "parent-task-someday",
       "prompt": "Set up an outcome for this task: **Fix the squeaky gate** — The front gate squeaks every time you open it. Probably just needs some WD-40 and tightening the hinges. Maybe a new latch too. No rush, it's been like that for months. Container type: parent task.",
       "expected_output": "Should create a parent task with someday label applied, kept in its natural area (not moved to a separate Someday/Maybe area). Should still propose a first sub-task.",

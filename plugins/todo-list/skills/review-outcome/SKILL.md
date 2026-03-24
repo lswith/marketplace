@@ -28,7 +28,21 @@ Read the outcome name. Does it describe a clear finished state someone could rec
 - If the name is activity-based, propose a sharper outcome-oriented name — even if the activity is descriptive. "Build a consulting network" is clear about the activity but doesn't describe what done looks like. Propose something like "Active consulting referral network established". Similarly, "Research AI tools" → "AI toolstack selected and configured". Good outcome names describe a finished state you could point to and say "that's done".
 - If the user says the outcome is no longer relevant or has already been achieved, move to the completion check.
 
-### 2. Completion Check
+### 2. Container Hygiene (parent tasks only)
+
+If the outcome is a parent task (not a project), check whether it has leftover scheduling metadata that doesn't belong on an outcome container:
+
+- Priority other than p4
+- A due date
+- `next` or context labels
+
+If any of these are present, flag them: "This parent task has [priority/due date/labels] left over from when it was a single action — these should be removed since the sub-tasks carry the scheduling. Strip them?"
+
+After confirmation, remove the stale metadata. Keep description, deadline, and `someday` label — those are outcome-level concerns.
+
+Skip this check entirely for projects (they don't carry task-level metadata).
+
+### 3. Completion Check
 
 Look at the outcome's tasks or sub-tasks. Are they all done, or has the outcome already been achieved even if tasks remain?
 
@@ -36,7 +50,7 @@ Look at the outcome's tasks or sub-tasks. Are they all done, or has the outcome 
 - If the user confirms, complete or archive the outcome.
 - If not complete, continue.
 
-### 3. Staleness Check
+### 4. Staleness Check
 
 Does the outcome have any active tasks? Is there any sign of recent progress?
 
@@ -45,7 +59,7 @@ Does the outcome have any active tasks? Is there any sign of recent progress?
 - If there are clearly active tasks, skip this check entirely.
 - **Deadline urgency:** If any task has a deadline within 14 days, flag it regardless of other staleness signals: "There's a deadline coming up on [date] for [task] — is this getting enough attention?" A looming deadline with minimal progress is a real risk, even if the outcome otherwise looks active.
 
-### 4. Next Action Check
+### 5. Next Action Check
 
 Does the outcome have at least one task or sub-task with a `next` label?
 
@@ -53,7 +67,7 @@ Does the outcome have at least one task or sub-task with a `next` label?
 - If **no** — flag it: "This has no defined next action. What's the next concrete step?"
   - Create the task the user describes, add the `next` label, and place it in the outcome (as a sub-task for parent tasks, as a task for projects).
 
-### 5. Active vs Someday
+### 6. Active vs Someday
 
 Only ask this if the outcome seems stalled — the user was hesitant in earlier answers, or the staleness check raised concerns. Ask: "Keep this active, or defer to someday?"
 
@@ -64,7 +78,7 @@ If the outcome is clearly active and healthy, skip this entirely.
 
 ## Rules
 
-- Only change the outcome name, completion status, or labels (for someday deferral). Don't touch individual task metadata — that's a separate concern handled elsewhere.
+- Only change the outcome name, completion status, labels (for someday deferral), or stale scheduling metadata on parent tasks (container hygiene). Don't touch individual sub-task metadata — that's a separate concern handled elsewhere.
 - **One question at a time.** If multiple checks flag issues (e.g. vague name AND no tasks), raise the first one and wait for the user's response before moving to the next. Don't bundle questions — the user should only be thinking about one thing at a time.
 - Most outcomes take 0–2 questions. If everything looks healthy (clear outcome, has a next action, active), say "Looks good" and move on.
 - **Don't narrate your process.** Only mention checks that surface an issue or need confirmation. Don't say "Staleness Check: Skipped" or "Completion Check: not done yet" — just address what needs attention and skip the rest silently.

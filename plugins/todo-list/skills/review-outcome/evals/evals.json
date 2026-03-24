@@ -203,6 +203,39 @@
     },
     {
       "id": 11,
+      "name": "parent-task-stale-scheduling-metadata",
+      "prompt": "Review this outcome:\n\n**Parent task:** Shower leak fixed\n**Area:** Home\n**Priority:** p2\n**Due date:** next Monday\n**Labels:** next, home\n**Sub-tasks:**\n- \"Buy replacement washer from hardware store\" [next] p3\n- \"Replace shower washer\" p4",
+      "expected_output": "Should flag that the parent task has stale scheduling metadata (p2 priority, due date, next/home labels) left over from when it was a single action. Should offer to strip them. The sub-tasks are fine.",
+      "assertions": [
+        {
+          "name": "flags-stale-priority",
+          "type": "llm_judge",
+          "criteria": "The response flags that the parent task has a priority (p2) that doesn't belong on an outcome container."
+        },
+        {
+          "name": "flags-stale-due-date",
+          "type": "llm_judge",
+          "criteria": "The response flags that the parent task has a due date that doesn't belong on an outcome container."
+        },
+        {
+          "name": "flags-stale-labels",
+          "type": "llm_judge",
+          "criteria": "The response flags that the parent task has 'next' and/or 'home' labels that don't belong on an outcome container."
+        },
+        {
+          "name": "offers-to-strip",
+          "type": "llm_judge",
+          "criteria": "The response asks the user for confirmation before removing the stale metadata — it does not strip silently."
+        },
+        {
+          "name": "does-not-touch-subtask-metadata",
+          "type": "llm_judge",
+          "criteria": "The response does not modify or flag the sub-tasks' metadata — those are fine as they are."
+        }
+      ]
+    },
+    {
+      "id": 12,
       "name": "parent-task-no-subtasks",
       "prompt": "Review this outcome:\n\n**Parent task:** Passport renewed\n**Area:** Personal\n**Sub-tasks:** (none)",
       "expected_output": "Should flag that the parent task has no sub-tasks and ask for the next concrete step. May also ask if it's still active.",

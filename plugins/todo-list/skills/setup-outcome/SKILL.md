@@ -58,7 +58,20 @@ The container type was decided during routing — don't ask about it here, just 
 - **Parent task**: Create a task in the chosen area project. The task name is the outcome name from step 1. Sub-tasks will go inside it.
 - **Sub-project**: Create a sub-project under the chosen area. The project name is the outcome name from step 1. Tasks will go inside it.
 
-### 5. First Action
+### 5. Strip Scheduling Metadata
+
+If the task being converted into a parent task already has a priority other than p4, a due date, or `next`/context labels, strip them silently. These are leftovers from when it was a single action — they don't belong on an outcome container.
+
+- Reset priority to p4 (default)
+- Remove any due date
+- Remove `next` and any context labels
+- Keep the `someday` label if present (that's outcome-level state)
+- Keep any deadline if present (hard external dates apply to outcomes)
+- Keep the description (outcome-level context)
+
+Don't ask the user — just clean it up as part of the conversion.
+
+### 6. First Action
 
 Every outcome needs a concrete first step. Ask: "What's the very first thing you'd need to do?"
 
@@ -76,7 +89,7 @@ Create the first action in the container:
 
 If the user mentioned a hard external date during the conversation (e.g. "filing deadline is April 15", "the event is June 12", "applications close March 31"), set a **deadline** on the first action so the countdown is visible. Don't ask about deadlines separately — just pick them up from what was already said.
 
-### 6. Active or Someday
+### 7. Active or Someday
 
 Ask: "Is this something you're tackling now, or more of a someday thing?"
 
@@ -87,7 +100,7 @@ If it's obviously one or the other from context, state it confidently rather tha
 - Any specific timeframe, date, or hard external deadline ("in October", "before the end of the month", "next year", "filing deadline is April 15") — clearly active. If the date is a hard external constraint, set it as a deadline on the first action.
 - "Maybe one day I'd like to...", "no rush", "always wanted to" with no timeframe — clearly someday.
 
-### 7. Clean Up
+### 8. Clean Up
 
 Delete or complete the original inbox task — it's now represented by the outcome and its first action.
 
