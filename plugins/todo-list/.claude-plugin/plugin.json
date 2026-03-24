@@ -1,6 +1,6 @@
 {
   "name": "todo-list",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "GTD-powered task management skills for Todoist",
   "author": {
     "name": "Luke Swithenbank"
