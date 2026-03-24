@@ -5,7 +5,7 @@
       "id": 1,
       "name": "quick-two-minute-task",
       "prompt": "Route this task: **Reply to Sarah's email about Friday** — She asked if I'm free for lunch, just need to say yes.",
-      "expected_output": "Should recognise this as a 2-minute task and suggest the user just do it now. Should not move it to a project or One-Off Tasks.",
+      "expected_output": "Should recognise this as a 2-minute task and suggest the user just do it now. Should not move it to a project or route it to an area.",
       "assertions": [
         {
           "name": "suggests-do-it-now",
@@ -15,12 +15,12 @@
         {
           "name": "does-not-move-task",
           "type": "llm_judge",
-          "criteria": "The response does NOT move the task to One-Off Tasks or any project. It leaves the task in the inbox for the user to do."
+          "criteria": "The response does NOT move the task to any project or area. It leaves the task in the inbox for the user to do."
         },
         {
           "name": "does-not-create-project",
           "type": "llm_judge",
-          "criteria": "The response does NOT suggest creating a project or mention setup-project."
+          "criteria": "The response does NOT suggest creating a project or parent task."
         }
       ],
       "files": []
@@ -29,22 +29,22 @@
       "id": 2,
       "name": "clearly-multi-step-project",
       "prompt": "Route this task: **Plan holiday to Japan** — Want to go for two weeks in October, need to sort flights, accommodation, itinerary, and travel insurance.",
-      "expected_output": "Should identify this as a multi-step project. Should state it's a project and hand off to setup-project. Should NOT move it to One-Off Tasks.",
+      "expected_output": "Should identify this as multi-step and specifically as a PROJECT (not a parent task) — it has many independent actions across different contexts (booking, research, insurance) and will run for weeks. Should NOT route to an area as a single action.",
       "assertions": [
         {
-          "name": "identifies-as-project",
+          "name": "identifies-as-multi-step",
           "type": "llm_judge",
-          "criteria": "The response identifies the task as requiring multiple steps — it's a project, not a single action."
+          "criteria": "The response identifies the task as requiring multiple steps."
         },
         {
-          "name": "does-not-create-project",
+          "name": "identifies-as-project-not-parent-task",
           "type": "llm_judge",
-          "criteria": "The response does NOT suggest creating a project or mention setup-project."
+          "criteria": "The response identifies this as a project (not a parent task with sub-tasks). It recognises the scope: many independent actions (flights, accommodation, itinerary, insurance) across different contexts, running over weeks."
         },
         {
-          "name": "does-not-defer-to-one-off",
+          "name": "does-not-route-to-area",
           "type": "llm_judge",
-          "criteria": "The response does NOT move the task to One-Off Tasks."
+          "criteria": "The response does NOT route this as a single action to an area project."
         },
         {
           "name": "does-not-suggest-two-minute",
@@ -56,14 +56,14 @@
     },
     {
       "id": 3,
-      "name": "single-action-defer",
+      "name": "single-action-routes-to-area",
       "prompt": "Route this task: **Buy new running shoes** — Current pair is worn out, need to get a new pair from the running shop in town.",
-      "expected_output": "Should recognise this as a single-action task that's not quick (can't be done in 2 minutes). Should move to One-Off Tasks. Should not ask about metadata.",
+      "expected_output": "Should recognise this as a single-action task that's not quick (can't be done in 2 minutes). Should route to an appropriate area project (e.g. Personal). Should not ask about metadata.",
       "assertions": [
         {
-          "name": "moves-to-one-off-tasks",
+          "name": "routes-to-area-project",
           "type": "llm_judge",
-          "criteria": "The response moves (or proposes moving) the task to the One-Off Tasks project."
+          "criteria": "The response routes (or proposes routing) the task to an area project (e.g. Personal, Home, or similar) — NOT to a project called 'One-Off Tasks'."
         },
         {
           "name": "does-not-ask-about-metadata",
@@ -76,9 +76,9 @@
           "criteria": "The response does NOT suggest this is a 2-minute task the user should do right now."
         },
         {
-          "name": "does-not-create-project",
+          "name": "does-not-create-project-or-parent-task",
           "type": "llm_judge",
-          "criteria": "The response does NOT suggest creating a project or mention setup-project."
+          "criteria": "The response does NOT suggest creating a project or parent task."
         }
       ],
       "files": []
@@ -114,7 +114,7 @@
       "followups": [
         "Nah, I don't have his number handy right now — I'll do it later"
       ],
-      "expected_output": "Should first suggest it's a 2-minute task. When the user declines, should move to the project check and then defer to One-Off Tasks.",
+      "expected_output": "Should first suggest it's a 2-minute task. When the user declines, should route to an appropriate area project.",
       "assertions": [
         {
           "name": "initially-suggests-two-minute",
@@ -122,9 +122,9 @@
           "criteria": "The first response (before the user's followup) suggests this is a quick 2-minute task."
         },
         {
-          "name": "moves-to-one-off-after-decline",
+          "name": "routes-to-area-after-decline",
           "type": "llm_judge",
-          "criteria": "After the user declines to do it now, the response moves or proposes moving the task to One-Off Tasks."
+          "criteria": "After the user declines to do it now, the response routes or proposes routing the task to an area project (e.g. Personal) — NOT to a project called 'One-Off Tasks'."
         },
         {
           "name": "does-not-push-back",
@@ -138,7 +138,7 @@
       "id": 6,
       "name": "obviously-not-quick-single-action",
       "prompt": "Route this task: **Get passport renewed** — Mine expires in 3 months, need it for a trip in June.",
-      "expected_output": "Should skip the 2-minute question entirely (obviously not quick). Should recognise this as a single action and defer to One-Off Tasks.",
+      "expected_output": "Should skip the 2-minute question entirely (obviously not quick). Should recognise this as a single action and route to an appropriate area project.",
       "assertions": [
         {
           "name": "skips-two-minute",
@@ -148,12 +148,60 @@
         {
           "name": "treats-as-single-action",
           "type": "llm_judge",
-          "criteria": "The response treats this as a single action, not a multi-step project. It does not suggest creating a project."
+          "criteria": "The response treats this as a single action, not a multi-step project or parent task."
         },
         {
-          "name": "moves-to-one-off-tasks",
+          "name": "routes-to-area-project",
           "type": "llm_judge",
-          "criteria": "The response moves or proposes moving the task to One-Off Tasks."
+          "criteria": "The response routes or proposes routing the task to an area project (e.g. Personal) — NOT to a project called 'One-Off Tasks'."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "clearly-parent-task",
+      "prompt": "Route this task: **Get motorcycle serviced** — Annual service is due. Need to book the mechanic, drop it off in the morning, and pick it up after work.",
+      "expected_output": "Should identify this as multi-step and specifically as a PARENT TASK (not a project) — it's a bounded set of sequential steps (book, drop off, pick up) that you can see end-to-end.",
+      "assertions": [
+        {
+          "name": "identifies-as-multi-step",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task as requiring multiple steps."
+        },
+        {
+          "name": "identifies-as-parent-task-not-project",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a parent task (with sub-tasks), NOT a full project. It recognises the bounded, sequential nature — book, drop off, pick up."
+        },
+        {
+          "name": "does-not-route-as-single-action",
+          "type": "llm_judge",
+          "criteria": "The response does NOT treat this as a single action and route it to an area."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "ambiguous-parent-or-project",
+      "prompt": "Route this task: **Set up home office** — Need a proper desk, monitor, better chair, maybe some shelving. Also want to sort out the cable management and lighting.",
+      "expected_output": "Should identify as multi-step but the container type is ambiguous — could be a parent task (bounded list of purchases and setup steps) or a project (multiple independent workstreams over time). Should ask the user.",
+      "assertions": [
+        {
+          "name": "identifies-as-multi-step",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task as requiring multiple steps."
+        },
+        {
+          "name": "asks-about-container-type",
+          "type": "llm_judge",
+          "criteria": "The response asks the user whether this is a handful of steps they can see end-to-end, or a bigger effort they'd want to track as an ongoing project. It does not assume either way."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question — not zero, not multiple questions at once."
         }
       ],
       "files": []

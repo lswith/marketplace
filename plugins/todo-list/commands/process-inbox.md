@@ -29,7 +29,7 @@ Work through the Todoist inbox one task at a time. Each task gets clarified, rou
 ## Setup
 
 1. Fetch all tasks from the Todoist Inbox project.
-2. Fetch all projects (needed to find One-Off Tasks, identify areas, and check for existing projects during routing).
+2. Fetch all projects (needed to identify areas and check for existing projects/outcomes during routing).
 3. Fetch existing labels (needed for enrichment).
 4. Tell the user how many tasks are in the inbox: "You have N tasks in your inbox. Let's work through them."
 
@@ -55,10 +55,11 @@ Show the task name and description (if any). Keep it brief:
 
 ### 3. Route
 
-Load the `route-task` skill using the Skill tool. The task will be routed to one of three outcomes:
+Load the `route-task` skill using the Skill tool. The task will be routed to one of these outcomes:
 - **2-minute task** → user skips it (leaves in inbox to do themselves), move to next task.
-- **Project** → load the `setup-project` skill to create the project (define outcome, assign area, create first action, decide priority vs someday/maybe). Then clarify, prioritize, and enrich the first action — run steps 2, 4, and 5 on that task (skip routing, it's already in the project).
-- **Single action** → move to One-Off Tasks, continue to step 4.
+- **Parent task** → load the `setup-outcome` skill, telling it the container type is "parent task". It will define the outcome, assign an area, create the parent task, and add a first sub-task. Then clarify, prioritize, and enrich the first action — run steps 2, 4, and 5 on that sub-task (skip routing, it's already placed).
+- **Project** → load the `setup-outcome` skill, telling it the container type is "sub-project". It will define the outcome, assign an area, create the project, and add a first action. Then clarify, prioritize, and enrich the first action — run steps 2, 4, and 5 on that task (skip routing, it's already in the project).
+- **Single action** → the route-task skill has already moved it to an area project. Continue to step 4.
 
 ### 4. Set Priority
 
@@ -77,8 +78,8 @@ After each task is fully processed, move to the next one. Don't pause for a summ
 When all tasks are processed, give a brief summary:
 
 > Done! Processed N tasks:
-> - X moved to projects
-> - Y moved to One-Off Tasks
+> - X set up as outcomes (parent tasks/projects)
+> - Y moved to area projects (single actions)
 > - Z deleted (trash/reference)
 > - W skipped (2-minute tasks)
 
@@ -88,5 +89,5 @@ When all tasks are processed, give a brief summary:
 - **Don't get ahead of the user.** Wait for their response at each decision point before moving forward. The rhythm is: present → ask → wait → act → confirm → next.
 - **Keep it moving.** Each task should take 30–90 seconds. If a task is getting bogged down, suggest parking it and coming back later.
 - **Skip confidently within steps, not the steps themselves.** If a question within a step has an obvious answer (e.g. the routing is obvious), state the answer and move on rather than asking. But always load every skill — `clarify-task`, `route-task`, `enrich-task` — for every task. The skills handle more than you might expect from the step name alone.
-- **Load the right skills.** Use `clarify-task` for clarification, `route-task` for routing decisions, `setup-project` for turning multi-step tasks into projects, `set-priority` for deciding priority and scheduling, and `enrich-task` for adding remaining metadata. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
+- **Load the right skills.** Use `clarify-task` for clarification, `route-task` for routing decisions, `setup-outcome` for turning multi-step tasks into outcomes (parent tasks or projects), `set-priority` for deciding priority and scheduling, and `enrich-task` for adding remaining metadata. Load each skill using the Skill tool when needed. Follow their instructions — don't inline your own version of their logic.
 - **Track progress.** Keep a mental count of what happened to each task so you can give the summary at the end.

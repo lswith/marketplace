@@ -53,7 +53,7 @@
     },
     {
       "id": 3,
-      "prompt": "Set the priority for this task: 'Clean up iCloud folder'. No description. No deadline. No one waiting. It's in One-Off Tasks.",
+      "prompt": "Set the priority for this task: 'Clean up iCloud folder'. No description. No deadline. No one waiting. It's in Personal.",
       "expected_output": "Should propose P3 or P4 with no due date",
       "assertions": [
         {

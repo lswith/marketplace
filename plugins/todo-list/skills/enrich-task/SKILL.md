@@ -30,7 +30,7 @@ You will be given a task with a name, description, and possibly some existing me
    | **Context labels** | Fetch the user's existing labels first. Labels fall into two groups: **workflow labels** (`next`, `waiting`, `someday`) control task state; **context labels** (everything else) indicate where or how the work happens. Every `next` task should have exactly one context label. Apply silently if obvious from the task content — don't ask, just apply. If the task has the `next` label and no context label is obvious, ask which context fits. Never invent new labels — only use ones that already exist. |
    | **Waiting-for** | If the task is blocked — by another person, another task, or an event that hasn't happened yet. Apply the user's waiting label (fetch it from their existing labels). Search for the task or person it's waiting on and, if found, link them using a comment mentioning the blocking task/person. Also note the blocker in the description so it's visible at a glance. |
 
-3. **Handle someday/maybe tasks differently.** If the task is in a someday/maybe project or has a someday-type label:
+3. **Handle someday/maybe tasks differently.** If the task has a `someday` label:
    - Make sure the name and description are solid. These tasks get revisited weeks or months later and need to stand on their own without context.
    - Skip priority and due date — they don't apply to someday/maybe items. Exception: if the task has a hard external deadline (e.g. application closing date, grant submission window), still set the deadline — the countdown will be visible if the user later activates the task, and it prevents the window from closing unnoticed.
    - Context labels are still fine if obvious.

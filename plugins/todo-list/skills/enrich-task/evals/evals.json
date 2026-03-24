@@ -4,7 +4,7 @@
     {
       "id": 1,
       "name": "obvious-context-labels",
-      "prompt": "Enrich this task: **Pick up dry cleaning** — In the One-Off Tasks project, no labels or priority set. Description: 'Suits from the place on High Street, ready after 3pm.'",
+      "prompt": "Enrich this task: **Pick up dry cleaning** — In the Personal project, no labels or priority set. Description: 'Suits from the place on High Street, ready after 3pm.'",
       "expected_output": "Should fetch labels from the task manager (next, someday, home, errand, waiting), then silently apply 'errand' since picking up dry cleaning is an errand. Should propose priority. Should NOT use labels that don't exist.",
       "assertions": [
         {
@@ -33,7 +33,7 @@
     {
       "id": 2,
       "name": "task-with-implied-deadline",
-      "prompt": "Enrich this task: **Submit tax return** — In the One-Off Tasks project, no metadata set. Description: 'Self-assessment tax return for 2024/25. The deadline is 31 January 2026.'",
+      "prompt": "Enrich this task: **Submit tax return** — In the Personal project, no metadata set. Description: 'Self-assessment tax return for 2024/25. The deadline is 31 January 2026.'",
       "expected_output": "Should propose a deadline (31 Jan) distinct from a due date (earlier). Should set high priority. Should only use labels that exist after fetching.",
       "assertions": [
         {
@@ -62,7 +62,7 @@
     {
       "id": 3,
       "name": "someday-maybe-task",
-      "prompt": "Enrich this task: **Learn to play guitar** — In a project under the Someday/Maybe area. Description: 'Always wanted to learn, maybe start with online lessons.'",
+      "prompt": "Enrich this task: **Learn to play guitar** — Has the `someday` label. Description: 'Always wanted to learn, maybe start with online lessons.'",
       "expected_output": "Should skip priority and due date for someday/maybe. Should focus on description quality. Should only use fetched labels.",
       "assertions": [
         {
@@ -86,7 +86,7 @@
     {
       "id": 7,
       "name": "someday-maybe-with-hard-deadline",
-      "prompt": "Enrich this task: **Apply for the Smith Foundation grant** — In a project under the Someday/Maybe area. Description: 'Up to $10k for community projects. Applications close 15 June 2026. Would need to write a proposal and get two references.'",
+      "prompt": "Enrich this task: **Apply for the Smith Foundation grant** — Has the `someday` label. Description: 'Up to $10k for community projects. Applications close 15 June 2026. Would need to write a proposal and get two references.'",
       "expected_output": "Should skip priority and due date (it's someday/maybe), but SHOULD set a deadline of 15 June 2026 because there's a hard external closing date. The countdown will be visible if the user later activates the task.",
       "assertions": [
         {
@@ -115,7 +115,7 @@
     {
       "id": 4,
       "name": "waiting-for-detection",
-      "prompt": "Enrich this task: **Book flights to Barcelona** — In the One-Off Tasks project. Description: 'Anniversary trip, first week of June. Need to wait for Sarah to confirm she can get the time off work before booking.'",
+      "prompt": "Enrich this task: **Book flights to Barcelona** — In the Personal project. Description: 'Anniversary trip, first week of June. Need to wait for Sarah to confirm she can get the time off work before booking.'",
       "expected_output": "Should detect the waiting-for situation. Should apply the 'waiting' label (after fetching labels). Should note the blocker.",
       "assertions": [
         {
@@ -139,7 +139,7 @@
     {
       "id": 5,
       "name": "task-already-has-metadata",
-      "prompt": "Enrich this task: **Call electrician about kitchen lights** — In the One-Off Tasks project. Priority p2, due date next Tuesday. Description: 'The spotlights in the kitchen keep flickering. Got a recommendation from Sarah — Jim's Electrical, 0412 555 789.'",
+      "prompt": "Enrich this task: **Call electrician about kitchen lights** — In the Personal project. Priority p2, due date next Tuesday. Description: 'The spotlights in the kitchen keep flickering. Got a recommendation from Sarah — Jim's Electrical, 0412 555 789.'",
       "expected_output": "Should recognise the task already has appropriate metadata. May suggest 'home' label if it fits. Should not invent changes.",
       "assertions": [
         {
@@ -163,7 +163,7 @@
     {
       "id": 6,
       "name": "task-with-no-obvious-metadata",
-      "prompt": "Enrich this task: **Read Designing Data-Intensive Applications chapter 5** — In the One-Off Tasks project, no metadata. Description: 'Continuing from where I left off last week.'",
+      "prompt": "Enrich this task: **Read Designing Data-Intensive Applications chapter 5** — In the Personal project, no metadata. Description: 'Continuing from where I left off last week.'",
       "expected_output": "Should recognise not much metadata is needed. Maybe a low priority, no due date, no obvious label from the fetched set. Should not over-enrich.",
       "assertions": [
         {
