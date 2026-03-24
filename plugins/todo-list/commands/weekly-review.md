@@ -84,9 +84,11 @@ Loop through ALL tasks with the `next` or `waiting` label. For each:
 
 1. Present: **Task 1 of N:** [name] (in [project/parent task], [label], [priority], [due date or "no date"])
 2. Load the `review-task` skill using the Skill tool.
-3. If the review flags a priority issue (wrong level, missing due date on P1/P2, P3/P4 with a date), load the `set-priority` skill to re-evaluate and fix it.
-4. Act on any remaining output from the review.
-5. Move to the next.
+3. If the task name is vague, question-shaped, or lacks a clear outcome/action, load the `clarify-task` skill to sharpen it.
+4. If the review flags a priority issue (wrong level, missing due date on P1/P2, P3/P4 with a date), load the `set-priority` skill to re-evaluate and fix it.
+5. If the task is missing metadata (no priority, no context label, or a P1/P2 without a due date), load the `enrich-task` skill to fill in the gaps.
+6. Act on any remaining output from the review.
+7. Move to the next.
 
 ## Phase 3: Someday/Maybe Review
 
