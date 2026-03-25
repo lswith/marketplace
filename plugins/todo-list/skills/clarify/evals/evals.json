@@ -1,0 +1,348 @@
+{
+  "skill_name": "clarify",
+  "evals": [
+    {
+      "id": 1,
+      "name": "clear-task-skips-clarification",
+      "prompt": "Clarify this task: **Call dentist to book cleaning**",
+      "expected_output": "Should recognise the task is already clear and skip clarification entirely. Should NOT ask any questions — not even about additional details like phone numbers. Should state it doesn't need clarification and stop.",
+      "assertions": [
+        {
+          "name": "recognises-task-is-clear",
+          "type": "llm_judge",
+          "criteria": "The response explicitly states that the task is already clear, specific, or doesn't need clarification."
+        },
+        {
+          "name": "does-not-ask-any-questions",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask any questions at all — no clarifying questions, no questions about details, no questions about phone numbers or context. It simply confirms the task is clear."
+        },
+        {
+          "name": "does-not-rename",
+          "type": "llm_judge",
+          "criteria": "The response does not propose a new name or suggest renaming the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "broad-but-obvious-skips-clarification",
+      "prompt": "Clarify this task: **Sort out finances**",
+      "expected_output": "Should recognise that while broad, the intent is obvious — it's about finances. Should skip clarification entirely rather than asking what they meant.",
+      "assertions": [
+        {
+          "name": "does-not-ask-clarifying-question",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask a clarifying question. It recognises that while the task is broad, a reasonable person can determine this is about finances. It should skip clarification."
+        },
+        {
+          "name": "recognises-intent-is-obvious",
+          "type": "llm_judge",
+          "criteria": "The response acknowledges that the task doesn't need clarification — the intent is clear enough to work with even if it's broad or imprecise."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "vague-question-format-asks-one-question",
+      "prompt": "Clarify this task: **Website?**",
+      "expected_output": "Should ask exactly one clarifying question to understand what the user meant. Should not guess or propose a name without asking first.",
+      "assertions": [
+        {
+          "name": "asks-exactly-one-question",
+          "type": "llm_judge",
+          "criteria": "The response contains exactly one question to the user. Not zero, not two or more — just one."
+        },
+        {
+          "name": "does-not-propose-name-yet",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a new task name or use bold formatting to suggest a rename. It only asks for clarification."
+        },
+        {
+          "name": "does-not-update-task",
+          "type": "llm_judge",
+          "criteria": "The response does not attempt to update or rename the task. No tool calls to modify the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "bare-noun-with-followup",
+      "prompt": "Clarify this task: **Engagement ring**",
+      "followups": [
+        "I want to research styles and prices before I go shopping — she likes sapphires and my budget is around $3k"
+      ],
+      "expected_output": "After the user's response, should propose a concrete action-oriented name like 'Research engagement ring styles and prices' and a description capturing preferences and budget.",
+      "assertions": [
+        {
+          "name": "initial-response-asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The first response (before the user's followup) asks exactly one clarifying question."
+        },
+        {
+          "name": "proposes-verb-led-name",
+          "type": "llm_judge",
+          "criteria": "After the user explains they want to research styles and prices, the proposed task name starts with a verb (e.g. 'Research', 'Compare', 'Look into')."
+        },
+        {
+          "name": "proposed-name-under-10-words",
+          "type": "llm_judge",
+          "criteria": "The proposed task name is 10 words or fewer."
+        },
+        {
+          "name": "proposes-description",
+          "type": "llm_judge",
+          "criteria": "The response includes a proposed description as a distinct field, separate from the name."
+        },
+        {
+          "name": "description-captures-preferences-and-budget",
+          "type": "llm_judge",
+          "criteria": "The proposed description captures the specific details the user mentioned: sapphire preference and ~$3k budget."
+        },
+        {
+          "name": "asks-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "After proposing the name and description, asks the user to confirm whether it captures the task correctly."
+        },
+        {
+          "name": "only-changes-name-and-description",
+          "type": "llm_judge",
+          "criteria": "The response ONLY proposes changes to the task name and description. It does NOT suggest changes to project, labels, priority, due date, or any other metadata."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "rich-context-skip-question",
+      "prompt": "Clarify this task: **Holiday** — I need to book flights to Barcelona for the first week of June, flying from London. It's for our anniversary.",
+      "expected_output": "Should skip the clarifying question since enough context is given, and go straight to proposing a name and description.",
+      "assertions": [
+        {
+          "name": "does-not-ask-question",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask a clarifying question. It goes straight to proposing a name and description because enough context was provided."
+        },
+        {
+          "name": "proposes-verb-led-name",
+          "type": "llm_judge",
+          "criteria": "The proposed task name starts with a verb (e.g. 'Book', 'Find')."
+        },
+        {
+          "name": "proposed-name-under-10-words",
+          "type": "llm_judge",
+          "criteria": "The proposed task name is 10 words or fewer."
+        },
+        {
+          "name": "description-captures-details",
+          "type": "llm_judge",
+          "criteria": "The description captures key details: Barcelona, first week of June, flying from London, and that it's for an anniversary."
+        },
+        {
+          "name": "proposes-description",
+          "type": "llm_judge",
+          "criteria": "The response includes a proposed description as a distinct field, separate from the name."
+        },
+        {
+          "name": "asks-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "After proposing the name and description, asks the user to confirm whether it captures the task correctly."
+        },
+        {
+          "name": "only-changes-name-and-description",
+          "type": "llm_judge",
+          "criteria": "The response ONLY proposes changes to the task name and description. It does NOT suggest changes to project, labels, priority, due date, or any other metadata."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "trash-already-done",
+      "prompt": "Clarify this task: **James**",
+      "followups": [
+        "Oh that was about calling James back but I already spoke to him, it's done"
+      ],
+      "expected_output": "After the user says they already handled it, should identify this as trash and confirm deletion. Should NOT try to rename or enrich it.",
+      "assertions": [
+        {
+          "name": "initial-response-asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The first response (before the user's followup) asks exactly one clarifying question, since 'James' is genuinely ambiguous."
+        },
+        {
+          "name": "identifies-as-trash",
+          "type": "llm_judge",
+          "criteria": "After the user says they already spoke to James, the response identifies the task as no longer needed — trash, not actionable."
+        },
+        {
+          "name": "confirms-deletion",
+          "type": "llm_judge",
+          "criteria": "The response asks to confirm deletion or offers to delete/complete the task."
+        },
+        {
+          "name": "does-not-rename",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a new name or description for the task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "reference-not-a-task",
+      "prompt": "Clarify this task: **SKY-4829**",
+      "followups": [
+        "That's the reference number for my insurance claim — I need it when I call them about the water damage"
+      ],
+      "expected_output": "Should identify this as reference information, not a task. Should ask which existing task to attach it to as a comment.",
+      "assertions": [
+        {
+          "name": "identifies-as-reference",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as reference information rather than an actionable task."
+        },
+        {
+          "name": "asks-where-to-attach",
+          "type": "llm_judge",
+          "criteria": "The response asks which existing task this reference info should be attached to as a comment."
+        },
+        {
+          "name": "does-not-propose-as-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose keeping this as a standalone task with a new name."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "name-sharpening-after-context",
+      "prompt": "Clarify this task: **Google workspace**",
+      "followups": [
+        "I need to set up Google Workspace email for the business — we're moving off the free Gmail accounts"
+      ],
+      "expected_output": "After context is provided, should propose a sharp verb-led name and description capturing the migration context.",
+      "assertions": [
+        {
+          "name": "initial-response-asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The first response asks exactly one clarifying question, since 'Google workspace' alone is genuinely ambiguous."
+        },
+        {
+          "name": "proposes-verb-led-name",
+          "type": "llm_judge",
+          "criteria": "After the user explains, the proposed task name starts with a verb (e.g. 'Set up', 'Configure', 'Migrate')."
+        },
+        {
+          "name": "name-is-core-action-only",
+          "type": "llm_judge",
+          "criteria": "The proposed task name focuses on the core action without cramming in extra qualifiers. For example, 'Set up Google Workspace for business' is good; 'Set up Google Workspace email for business to replace free Gmail accounts' is too much."
+        },
+        {
+          "name": "proposed-name-under-10-words",
+          "type": "llm_judge",
+          "criteria": "The proposed task name is 10 words or fewer."
+        },
+        {
+          "name": "description-captures-migration-context",
+          "type": "llm_judge",
+          "criteria": "The proposed description mentions the context of moving away from free Gmail accounts."
+        },
+        {
+          "name": "asks-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "After proposing the name and description, asks the user to confirm."
+        },
+        {
+          "name": "only-changes-name-and-description",
+          "type": "llm_judge",
+          "criteria": "The response ONLY proposes changes to the task name and description. It does NOT suggest changes to project, labels, priority, due date, or any other metadata."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "ambiguous-actionability-defaults-actionable",
+      "prompt": "Clarify this task: **That thing from the meeting**",
+      "followups": [
+        "Oh yeah, Dave mentioned something about updating the shared drive permissions — I think some contractors still have access"
+      ],
+      "expected_output": "The user's response is slightly vague ('I think') but the intent is clear enough. Should default to actionable and propose a name and description rather than interrogating further about whether it's really a task.",
+      "assertions": [
+        {
+          "name": "initial-response-asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The first response asks exactly one clarifying question, since 'That thing from the meeting' is genuinely ambiguous."
+        },
+        {
+          "name": "treats-as-actionable",
+          "type": "llm_judge",
+          "criteria": "After the user's response, the task is treated as actionable. The response does NOT ask whether it's really a task, whether it's reference, or whether it's still needed."
+        },
+        {
+          "name": "proposes-verb-led-name",
+          "type": "llm_judge",
+          "criteria": "The proposed task name starts with a verb (e.g. 'Review', 'Revoke', 'Update', 'Audit')."
+        },
+        {
+          "name": "proposes-description",
+          "type": "llm_judge",
+          "criteria": "The response includes a proposed description as a distinct field, separate from the name."
+        },
+        {
+          "name": "does-not-ask-additional-questions",
+          "type": "llm_judge",
+          "criteria": "After the user's response, the response does NOT ask further clarifying questions. It proposes a name and description directly."
+        },
+        {
+          "name": "only-changes-name-and-description",
+          "type": "llm_judge",
+          "criteria": "The response ONLY proposes changes to the task name and description. It does NOT suggest changes to project, labels, priority, due date, or any other metadata."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "original-name-kept-when-fine",
+      "prompt": "Clarify this task: **Call plumber**",
+      "followups": [
+        "The kitchen tap has been dripping for a week — need to get someone out to fix it"
+      ],
+      "expected_output": "The original name 'Call plumber' is already a fine verb-led name after the context is provided. Should keep the original name (or something very close) rather than inventing a longer one. Should add a description with the context.",
+      "assertions": [
+        {
+          "name": "initial-response-asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The first response asks exactly one clarifying question, since 'Call plumber' alone could be about many things."
+        },
+        {
+          "name": "keeps-or-minimally-changes-name",
+          "type": "llm_judge",
+          "criteria": "The proposed name is the same as or very close to the original 'Call plumber'. It should NOT be over-expanded into something like 'Call plumber to fix dripping kitchen tap and schedule repair visit'."
+        },
+        {
+          "name": "proposes-description-with-context",
+          "type": "llm_judge",
+          "criteria": "The proposed description captures the dripping kitchen tap context that the user provided."
+        },
+        {
+          "name": "asks-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "After proposing the name and description, asks the user to confirm."
+        },
+        {
+          "name": "only-changes-name-and-description",
+          "type": "llm_judge",
+          "criteria": "The response ONLY proposes changes to the task name and description. It does NOT suggest changes to project, labels, priority, due date, or any other metadata."
+        }
+      ],
+      "files": []
+    }
+  ]
+}

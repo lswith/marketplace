@@ -1,0 +1,574 @@
+{
+  "skill_name": "organize",
+  "evals": [
+    {
+      "id": 1,
+      "name": "two-minute-task-suggest-do-now",
+      "prompt": "Organize this task: **Reply to Sarah's email about Friday** — She asked if I'm free for lunch, just need to say yes.",
+      "expected_output": "Should recognise this as a 2-minute task and suggest the user just do it now. Should not move it to an area, create a project, or create a parent task.",
+      "assertions": [
+        {
+          "name": "suggests-do-it-now",
+          "type": "llm_judge",
+          "criteria": "The response suggests doing the task now or mentions the 2-minute rule. It frames this as something quick the user could knock out right away."
+        },
+        {
+          "name": "does-not-move-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT move the task to any project or area. It leaves the task in the inbox for the user to do."
+        },
+        {
+          "name": "does-not-create-container",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest creating a project or parent task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "two-minute-user-declines",
+      "prompt": "Organize this task: **Text Mike the new address** — He asked for it yesterday.",
+      "followups": [
+        "Nah, I don't have his number handy right now — I'll do it later"
+      ],
+      "expected_output": "Should first suggest it's a 2-minute task. When the user declines, should route to an appropriate area project as a single action.",
+      "assertions": [
+        {
+          "name": "initially-suggests-two-minute",
+          "type": "llm_judge",
+          "criteria": "The first response (before the user's followup) suggests this is a quick 2-minute task."
+        },
+        {
+          "name": "routes-to-area-after-decline",
+          "type": "llm_judge",
+          "criteria": "After the user declines to do it now, the response routes or proposes routing the task to an area project (e.g. Personal)."
+        },
+        {
+          "name": "does-not-push-back",
+          "type": "llm_judge",
+          "criteria": "The response does NOT push back or try to convince the user to do it now after they said no."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "single-action-routes-to-area",
+      "prompt": "Organize this task: **Buy new running shoes** — Current pair is worn out, need to get a new pair from the running shop in town.",
+      "expected_output": "Should recognise this as a single-action task that's not quick enough for the 2-minute rule. Should route to an appropriate area project and not ask about metadata.",
+      "assertions": [
+        {
+          "name": "routes-to-area-project",
+          "type": "llm_judge",
+          "criteria": "The response routes (or proposes routing) the task to an area project (e.g. Personal, Health, or similar)."
+        },
+        {
+          "name": "does-not-ask-about-metadata",
+          "type": "llm_judge",
+          "criteria": "The response does NOT ask about priority, labels, due dates, or other metadata."
+        },
+        {
+          "name": "does-not-suggest-two-minute",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest this is a 2-minute task the user should do right now."
+        },
+        {
+          "name": "does-not-create-container",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest creating a project or parent task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "clearly-parent-task-with-outcome-and-first-action",
+      "prompt": "Organize this task: **Get motorcycle serviced** — Annual service is due. Need to book the mechanic, drop it off in the morning, and pick it up after work.",
+      "expected_output": "Should identify as multi-step, choose parent task (bounded sequential steps), propose an outcome-oriented name, suggest an area, and propose a concrete first action. Should not create a full plan.",
+      "assertions": [
+        {
+          "name": "identifies-as-parent-task",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a parent task (with sub-tasks), NOT a full project. It recognises the bounded, sequential nature."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes an outcome name that describes a finished state — NOT an activity. It should NOT start with a verb like 'Get' or 'Service'. Good examples: 'Motorcycle serviced and roadworthy', 'Annual motorcycle service completed'. Bad examples: 'Get motorcycle serviced', 'Service the motorcycle'."
+        },
+        {
+          "name": "suggests-area",
+          "type": "llm_judge",
+          "criteria": "The response suggests or asks about which area (top-level project) the parent task should live under."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes a concrete first action — a single step to get started (e.g. book the mechanic)."
+        },
+        {
+          "name": "does-not-create-full-plan",
+          "type": "llm_judge",
+          "criteria": "The response does NOT create multiple sub-tasks, sections, or a detailed plan. Just the outcome and one first action."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "clearly-project-with-outcome-and-first-action",
+      "prompt": "Organize this task: **Plan holiday to Japan** — Want to go for two weeks in October, need to sort flights, accommodation, itinerary, and travel insurance.",
+      "expected_output": "Should identify as multi-step and specifically a PROJECT (many independent actions across different contexts, weeks of management). Should propose outcome name, area, and first action.",
+      "assertions": [
+        {
+          "name": "identifies-as-project",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a project (not a parent task). It recognises the scope: many independent actions (flights, accommodation, itinerary, insurance) across different contexts, running over weeks."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes an outcome name that describes a finished state — NOT an activity. It should NOT start with a verb like 'Plan'. Good examples: 'Japan holiday booked', 'Two-week Japan trip planned and booked'. Bad examples: 'Plan holiday to Japan'."
+        },
+        {
+          "name": "suggests-area",
+          "type": "llm_judge",
+          "criteria": "The response suggests or asks about which area the project should live under."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes a concrete first action — a single step to get started."
+        },
+        {
+          "name": "does-not-create-full-plan",
+          "type": "llm_judge",
+          "criteria": "The response does NOT create multiple tasks, sections, or a detailed project plan. Just the outcome and one first action."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "ambiguous-complexity-asks-user",
+      "prompt": "Organize this task: **Fix the leaking tap in the kitchen** — It's been dripping for a week, getting worse.",
+      "expected_output": "Should ask the user whether this is a one-step fix or needs multiple steps. Should not assume either way. Should ask exactly one question.",
+      "assertions": [
+        {
+          "name": "asks-about-complexity",
+          "type": "llm_judge",
+          "criteria": "The response asks the user whether this is a single-step task or needs multiple steps. It doesn't assume the answer."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question — not zero, not multiple questions at once."
+        },
+        {
+          "name": "does-not-suggest-two-minute",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest this is a 2-minute task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "ambiguous-container-type-asks-user",
+      "prompt": "Organize this task: **Set up home office** — Need a proper desk, monitor, better chair, maybe some shelving. Also want to sort out the cable management and lighting.",
+      "expected_output": "Should identify as multi-step but the container type is ambiguous — could be a parent task or project. Should ask the user one question about container type.",
+      "assertions": [
+        {
+          "name": "identifies-as-multi-step",
+          "type": "llm_judge",
+          "criteria": "The response identifies the task as requiring multiple steps."
+        },
+        {
+          "name": "asks-about-container-type",
+          "type": "llm_judge",
+          "criteria": "The response asks the user whether this is a handful of steps they can see end-to-end, or a bigger effort they'd want to track as an ongoing project. It does not assume either way."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question — not zero, not multiple questions at once."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "someday-outcome-gets-label",
+      "prompt": "Organize this task: **Learn woodworking** — Always fancied making furniture. Maybe take a course or start with some YouTube tutorials. No rush.",
+      "expected_output": "Should identify as multi-step, set up an outcome with someday label in its natural area. Should still propose a first action. Should NOT move to a separate Someday/Maybe area.",
+      "assertions": [
+        {
+          "name": "identifies-someday",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a someday item, not an active priority. It picks up on cues like 'no rush', 'maybe', 'always fancied'."
+        },
+        {
+          "name": "applies-someday-label",
+          "type": "llm_judge",
+          "criteria": "The response applies (or proposes applying) a someday label to the outcome. It does NOT move the outcome to a separate Someday/Maybe area or project."
+        },
+        {
+          "name": "stays-in-natural-area",
+          "type": "llm_judge",
+          "criteria": "The outcome stays in (or is proposed for) its natural area based on content — NOT moved to a separate someday area."
+        },
+        {
+          "name": "still-creates-first-action",
+          "type": "llm_judge",
+          "criteria": "The response still creates or proposes a first action, even for a someday item."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "active-outcome-with-deadline",
+      "prompt": "Organize this task: **Move house** — We've exchanged contracts, completion is on April 15th. Need to sort removals, redirect mail, update address everywhere, and cancel utilities.",
+      "expected_output": "Should identify as multi-step project, infer active status from the hard deadline, set deadline on first action, and propose outcome-oriented name. Should not ask about active vs someday.",
+      "assertions": [
+        {
+          "name": "identifies-as-project",
+          "type": "llm_judge",
+          "criteria": "The response identifies this as a project — many independent actions across different contexts (removals, mail, address changes, utilities)."
+        },
+        {
+          "name": "infers-active",
+          "type": "llm_judge",
+          "criteria": "The response treats this as an active outcome without asking about active vs someday. The April 15th date and exchanged contracts make this obviously active."
+        },
+        {
+          "name": "sets-deadline-on-first-action",
+          "type": "llm_judge",
+          "criteria": "The response sets or proposes setting a deadline on the first action, since April 15th is a hard external date."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes an outcome name that describes a finished state — NOT an activity. Good examples: 'Moved into new house', 'House move completed'. Bad examples: 'Move house'."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "strips-stale-metadata-on-conversion",
+      "prompt": "Organize this task: **Fix the leaking shower** — The shower head drips constantly. Need to replace the washer and maybe the cartridge. Currently has priority p2, due date of next Monday, and labels 'next' and 'home'.",
+      "expected_output": "Should identify as multi-step parent task and silently strip scheduling metadata (priority, due date, next/context labels) during conversion. Should still propose outcome name, area, and first action.",
+      "assertions": [
+        {
+          "name": "strips-priority",
+          "type": "llm_judge",
+          "criteria": "The response strips or resets the priority (from p2 to p4/default) as part of converting the task to an outcome container. This should happen silently."
+        },
+        {
+          "name": "strips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response removes the due date as part of the conversion."
+        },
+        {
+          "name": "strips-next-and-context-labels",
+          "type": "llm_judge",
+          "criteria": "The response removes the 'next' and 'home' labels as part of the conversion. These are action-level labels that don't belong on an outcome container."
+        },
+        {
+          "name": "does-not-ask-about-stripping",
+          "type": "llm_judge",
+          "criteria": "The metadata stripping happens silently — the response does NOT ask the user whether to remove the priority, due date, or labels."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response still proposes an outcome name describing a finished state, despite the metadata cleanup."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "merge-with-existing-outcome",
+      "prompt": "Organize this task: **Sort out home insurance renewal** — Current policy expires next month, need to compare quotes and switch provider. I already have a parent task called 'Home admin sorted' under Personal for household paperwork.",
+      "expected_output": "Should detect the existing 'Home admin sorted' outcome and propose merging rather than creating a new outcome. Should ask one question about the merge before moving on.",
+      "assertions": [
+        {
+          "name": "proposes-merge",
+          "type": "llm_judge",
+          "criteria": "The response acknowledges the existing 'Home admin sorted' outcome and suggests adding this work there rather than creating a brand new outcome."
+        },
+        {
+          "name": "asks-one-question",
+          "type": "llm_judge",
+          "criteria": "The response asks exactly one question — the merge question. It does not also ask about first action, area, or priority in the same response."
+        },
+        {
+          "name": "does-not-create-new-outcome",
+          "type": "llm_judge",
+          "criteria": "The response does not create a separate new project or parent task — it proposes using the existing one."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "restructure-parent-task-outgrown",
+      "prompt": "Review this existing outcome for organizing:\n\nType: Parent task\nName: \"New home office set up\"\nArea: Personal\nSub-tasks:\n1. Research standing desks (label: @desk, priority: P3)\n2. Order desk from supplier (label: @desk, priority: P3)\n3. Buy monitor arm on Amazon (label: @desk, priority: P4)\n4. Call electrician to add power points (label: @calls, priority: P3)\n5. Pick up cable management kit from Bunnings (label: @errands, priority: P4)\n6. Assemble desk when delivered (label: @home, priority: P3)\n7. Set up monitor and docking station (label: @home, priority: P3)\n8. Buy desk lamp (label: @errands, priority: P4)\n\nPlease evaluate whether this container type still fits.",
+      "expected_output": "Should propose converting to a project — 8 sub-tasks across 4 different contexts (@desk, @calls, @errands, @home), with independent tasks that could be worked in any order.",
+      "assertions": [
+        {
+          "name": "proposes-conversion-to-project",
+          "type": "llm_judge",
+          "criteria": "The response proposes converting this parent task to a project. It identifies the mismatch: too many sub-tasks (8) across multiple contexts."
+        },
+        {
+          "name": "cites-key-signals",
+          "type": "llm_judge",
+          "criteria": "The response mentions at least one concrete signal: the number of sub-tasks (8), the different contexts (@desk, @calls, @errands, @home), or the independent nature of the tasks."
+        },
+        {
+          "name": "waits-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "The response asks the user to confirm before performing the conversion. It does not just convert without asking."
+        },
+        {
+          "name": "preserves-metadata-intent",
+          "type": "llm_judge",
+          "criteria": "The response indicates (or implies) that existing task metadata (labels, priorities, due dates) will be preserved during migration."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "restructure-project-shrunk",
+      "prompt": "Review this existing outcome for organizing:\n\nType: Project (sub-project under Work)\nName: \"Quarterly report submitted\"\nArea: Work\nSections: none\nActive tasks:\n1. Collect data from team leads (label: @next, @desk, priority: P2)\n2. Write report draft (label: @desk, priority: P3)\nCompleted tasks: none\n\nPlease evaluate whether this container type still fits.",
+      "expected_output": "Should propose converting to a parent task — only 2 sequential tasks, no sections, no completed history (it was always small). A project is overhead for this.",
+      "assertions": [
+        {
+          "name": "proposes-conversion-to-parent-task",
+          "type": "llm_judge",
+          "criteria": "The response proposes converting this project to a parent task. It identifies the mismatch: only 2 sequential tasks with no sections."
+        },
+        {
+          "name": "considers-completion-history",
+          "type": "llm_judge",
+          "criteria": "The response considers (or at least does not ignore) that there are no completed tasks — this was always a small effort, not a project winding down."
+        },
+        {
+          "name": "waits-for-confirmation",
+          "type": "llm_judge",
+          "criteria": "The response asks the user to confirm before performing the conversion."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "restructure-container-fits-no-change",
+      "prompt": "Review this existing outcome for organizing:\n\nType: Parent task\nName: \"Car serviced and roadworthy\"\nArea: Personal\nSub-tasks:\n1. Book service appointment at mechanic (label: @next, @calls, priority: P2, due: 2026-03-26)\n2. Drop car off Monday morning (label: @errands, priority: P2)\n3. Pick up car after service (label: @errands, priority: P3)\n4. Pay service invoice (label: @desk, priority: P3)\n\nPlease evaluate whether this container type still fits.",
+      "expected_output": "Should return silently or confirm no change needed — 4 sub-tasks is within range for a parent task, and they're mostly sequential. No restructuring needed.",
+      "assertions": [
+        {
+          "name": "does-not-propose-change",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose converting the container type. It either says nothing needs changing or returns silently."
+        },
+        {
+          "name": "does-not-walk-through-checklist",
+          "type": "llm_judge",
+          "criteria": "The response does NOT walk through a verbose checklist of signals. It stays brief — the skill says to stay silent when nothing is wrong."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "restructure-project-winding-down-leave-alone",
+      "prompt": "Review this existing outcome for organizing:\n\nType: Project (sub-project under Personal)\nName: \"Japan holiday booked\"\nArea: Personal\nSections: Flights, Accommodation, Activities\nActive tasks:\n1. Print travel insurance certificate (label: @desk, priority: P3)\n2. Download offline maps for Tokyo (label: @desk, priority: P4)\nCompleted tasks: 18 (across flights booked, hotels reserved, activities researched, insurance purchased, etc.)\n\nPlease evaluate whether this container type still fits.",
+      "expected_output": "Should leave as a project — although only 2 active tasks remain, the 18 completed tasks and multiple sections show this was genuinely complex. It's just finishing up, not over-containerised.",
+      "assertions": [
+        {
+          "name": "does-not-propose-change",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose converting to a parent task. It recognises that the project is winding down after genuine complexity (18 completed tasks, multiple sections)."
+        },
+        {
+          "name": "considers-completion-history",
+          "type": "llm_judge",
+          "criteria": "The response considers the completed task history as evidence that this was a genuinely complex project, not one that was always small."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "obvious-area-no-unnecessary-questions",
+      "prompt": "Organize this task: **Prepare Q2 board presentation** — Need to compile financials, write the narrative, get design to make the deck, and rehearse.",
+      "expected_output": "Should identify as multi-step, assign to a Work area without asking, and not ask about active vs someday (obviously active with a Q2 deadline). Should be opinionated and brisk.",
+      "assertions": [
+        {
+          "name": "assigns-work-area-confidently",
+          "type": "llm_judge",
+          "criteria": "The response assigns or proposes the outcome under a Work area (or equivalent) without needing to ask. A board presentation is obviously work."
+        },
+        {
+          "name": "does-not-ask-unnecessary-questions",
+          "type": "llm_judge",
+          "criteria": "The response does not ask questions that have obvious answers from context (e.g. doesn't ask about area when it's clearly work, doesn't ask about active vs someday for a Q2 deadline)."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes an outcome name that describes a finished state — NOT an activity. Good examples: 'Q2 board presentation ready', 'Q2 board deck delivered'. Bad examples: 'Prepare Q2 board presentation'."
+        },
+        {
+          "name": "identifies-first-action",
+          "type": "llm_judge",
+          "criteria": "The response proposes a concrete first action."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "metadata-stripping-preserves-someday-and-deadline",
+      "prompt": "Organize this task: **Research MBA programmes** — Might apply next year. Application deadline is January 15th. Currently has priority p1, due date of tomorrow, and labels 'next', 'desk', and 'someday'.",
+      "expected_output": "Should identify as multi-step, strip scheduling metadata (priority, due date, next, desk labels) but PRESERVE the someday label, the deadline, and the description. The someday label is outcome-level state; the deadline is a hard external date.",
+      "assertions": [
+        {
+          "name": "strips-priority",
+          "type": "llm_judge",
+          "criteria": "The response strips or resets the priority from p1 to p4/default as part of converting to an outcome container."
+        },
+        {
+          "name": "strips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response removes the due date (tomorrow) as part of the conversion."
+        },
+        {
+          "name": "strips-next-and-context-labels",
+          "type": "llm_judge",
+          "criteria": "The response removes the 'next' and 'desk' labels as part of the conversion."
+        },
+        {
+          "name": "preserves-someday-label",
+          "type": "llm_judge",
+          "criteria": "The response keeps the 'someday' label on the outcome. It does NOT strip it along with the other labels."
+        },
+        {
+          "name": "preserves-deadline",
+          "type": "llm_judge",
+          "criteria": "The response keeps the January 15th deadline on the outcome. It does NOT remove it along with the due date."
+        },
+        {
+          "name": "preserves-description",
+          "type": "llm_judge",
+          "criteria": "The response keeps the description on the outcome container. It does NOT strip or discard it."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "cleans-up-original-inbox-task",
+      "prompt": "Organize this task: **Renew passport** — Expires in 3 months, need to get new photos, fill in the form, and post it off.",
+      "expected_output": "Should set up a parent task outcome with first action, and then delete or complete the original inbox task. The inbox task is now represented by the outcome container.",
+      "assertions": [
+        {
+          "name": "creates-outcome-container",
+          "type": "llm_judge",
+          "criteria": "The response creates (or proposes creating) a parent task as the outcome container."
+        },
+        {
+          "name": "deletes-original-inbox-task",
+          "type": "llm_judge",
+          "criteria": "The response deletes or completes the original inbox task after creating the outcome. The original task should not remain alongside the new container."
+        },
+        {
+          "name": "proposes-outcome-name",
+          "type": "llm_judge",
+          "criteria": "The response proposes an outcome name that describes a finished state. Good: 'Passport renewed'. Bad: 'Renew passport'."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "restructure-project-to-parent-with-someday-label",
+      "prompt": "Review this existing outcome for organizing:\n\nType: Project (sub-project under Personal)\nName: \"Basic woodworking skills learned\"\nArea: Personal\nLabels on project: someday\nSections: none\nActive tasks:\n1. Find a beginner woodworking course online (label: @desk, priority: P4)\n2. Buy a basic chisel set (label: @errands, priority: P4)\nCompleted tasks: none\n\nPlease evaluate whether this container type still fits.",
+      "followups": [
+        "Yeah, convert it"
+      ],
+      "expected_output": "Should propose converting to a parent task (only 2 tasks, no sections, no history). When the user confirms, the someday label must be preserved on the new parent task. All task metadata should be preserved.",
+      "assertions": [
+        {
+          "name": "proposes-conversion-to-parent-task",
+          "type": "llm_judge",
+          "criteria": "The response proposes converting from a project to a parent task. Only 2 tasks, no sections, no completed history."
+        },
+        {
+          "name": "preserves-someday-label-on-conversion",
+          "type": "llm_judge",
+          "criteria": "After the user confirms, the response applies the someday label to the new parent task. The someday label from the project must carry over."
+        },
+        {
+          "name": "preserves-task-metadata",
+          "type": "llm_judge",
+          "criteria": "The response preserves existing task metadata (labels, priorities) during migration. It does not change or strip anything."
+        },
+        {
+          "name": "stays-in-same-area",
+          "type": "llm_judge",
+          "criteria": "The new parent task is created in the same area (Personal) as the original project."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "restructure-parent-outgrown-executes-migration",
+      "prompt": "Review this existing outcome for organizing:\n\nType: Parent task\nName: \"Consulting business launched\"\nArea: Work\nSub-tasks:\n1. Register business name (label: @desk, priority: P2, due: 2026-04-01)\n2. Set up business bank account (label: @errands, priority: P3)\n3. Design logo with freelancer (label: @desk, priority: P4)\n4. Build simple landing page (label: @desk, priority: P3)\n5. Write service offerings document (label: @desk, priority: P3)\n6. Set up invoicing system (label: @desk, priority: P4)\n7. Reach out to 5 contacts for early clients (label: @calls, priority: P2)\n\nPlease evaluate whether this container type still fits.",
+      "followups": [
+        "Yes, convert it to a project"
+      ],
+      "expected_output": "Should propose converting to a project (7 tasks, multiple contexts, independent work). After user confirms, should execute the full migration: create project under Work, move all sub-tasks preserving metadata, delete old parent task.",
+      "assertions": [
+        {
+          "name": "proposes-conversion-to-project",
+          "type": "llm_judge",
+          "criteria": "The response proposes converting from a parent task to a project."
+        },
+        {
+          "name": "creates-project-in-same-area",
+          "type": "llm_judge",
+          "criteria": "After confirmation, the response creates the new project under the same area (Work)."
+        },
+        {
+          "name": "moves-all-tasks",
+          "type": "llm_judge",
+          "criteria": "The response moves all sub-tasks into the new project. It does not leave tasks behind or only move some."
+        },
+        {
+          "name": "preserves-all-metadata",
+          "type": "llm_judge",
+          "criteria": "The response preserves all task metadata during migration — labels, priorities, due dates. It does not change, strip, or reset any metadata."
+        },
+        {
+          "name": "deletes-old-parent-task",
+          "type": "llm_judge",
+          "criteria": "The response deletes the old parent task after moving the sub-tasks to the new project."
+        },
+        {
+          "name": "confirms-completion",
+          "type": "llm_judge",
+          "criteria": "The response confirms the conversion is done with a brief message like 'Converted to a project under Work'."
+        }
+      ],
+      "files": []
+    }
+  ]
+}

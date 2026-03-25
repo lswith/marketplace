@@ -1,0 +1,644 @@
+{
+  "skill_name": "triage",
+  "evals": [
+    {
+      "id": 1,
+      "name": "healthy-project-no-issues",
+      "prompt": "Triage this item:\n\n**Project:** Kitchen tap fixed\n**Area:** Home\n**Tasks:**\n- \"Call plumber to get quote\" [next] p3\n- \"Buy replacement tap washer\" p4",
+      "expected_output": "Should output 'No issues' and move on. The outcome has a clear finished state, an active next action, and reasonable task count.",
+      "assertions": [
+        {
+          "name": "no-issues",
+          "type": "llm_judge",
+          "criteria": "The response says 'No issues' or equivalent, confirming nothing needs attention."
+        },
+        {
+          "name": "no-flags-raised",
+          "type": "llm_judge",
+          "criteria": "The response does not flag staleness, missing next action, container issues, or anything else."
+        },
+        {
+          "name": "brief",
+          "type": "llm_judge",
+          "criteria": "The response is 1-2 sentences max. It does not narrate its checking process."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "healthy-parent-task-no-issues",
+      "prompt": "Triage this item:\n\n**Parent task:** Car serviced and roadworthy\n**Area:** Personal\n**Sub-tasks:**\n- \"Book mechanic for annual service\" [next] p3\n- \"Drop car off at mechanic\" p4\n- \"Pick up car after service\" p4",
+      "expected_output": "Should output 'No issues'. Clear outcome name, active next action, 3 sub-tasks is fine for a parent task.",
+      "assertions": [
+        {
+          "name": "no-issues",
+          "type": "llm_judge",
+          "criteria": "The response says 'No issues' or equivalent."
+        },
+        {
+          "name": "handles-parent-task",
+          "type": "llm_judge",
+          "criteria": "The response treats the parent task as an outcome and checks it appropriately, not as a single action."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "healthy-next-action-no-issues",
+      "prompt": "Triage this item:\n\n**Task:** Call dentist to book cleaning\n**Project:** Health checkups done\n**Labels:** [next, calls]\n**Priority:** p3\n**Due date:** 2026-03-27\n**Description:** Regular 6-month cleaning. Dentist is Dr Park at Sydney Dental, number is on the fridge.",
+      "expected_output": "Should output 'No issues'. Task is clear, relevant, has a due date, correct priority, and a context label.",
+      "assertions": [
+        {
+          "name": "no-issues",
+          "type": "llm_judge",
+          "criteria": "The response says 'No issues' or equivalent."
+        },
+        {
+          "name": "no-flags",
+          "type": "llm_judge",
+          "criteria": "The response does not flag metadata, priority, or relevance issues."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "stale-outcome",
+      "prompt": "Triage this item:\n\n**Project:** Improve home network\n**Area:** Personal\n**Tasks:**\n- \"Research mesh Wi-Fi systems\" p4, no due date\n- \"Check if ISP offers better plan\" p4, no due date\n- \"Look into Pi-hole for ad blocking\" [someday] p4, no due date",
+      "expected_output": "Should flag as stale (no activity, all low priority, no due dates) and flag no next action defined. Two flags expected.",
+      "assertions": [
+        {
+          "name": "flags-stale",
+          "type": "llm_judge",
+          "criteria": "The response flags the outcome as stale — no activity, all low priority, no due dates."
+        },
+        {
+          "name": "flags-no-next-action",
+          "type": "llm_judge",
+          "criteria": "The response flags that no task has a 'next' label."
+        },
+        {
+          "name": "does-not-fix",
+          "type": "llm_judge",
+          "criteria": "The response flags issues but does not attempt to fix them (no label changes, no completions, no asking the user what to do)."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "completed-outcome",
+      "prompt": "Triage this item:\n\n**Project:** Garage cleaned out\n**Area:** Home\n**Tasks:**\n- \"Take donation boxes to Salvos\" [next] p4 — completed\n- \"Sweep and mop garage floor\" p4 — completed\n- \"Install new shelf brackets\" p4 — completed",
+      "expected_output": "Should flag as completed — all tasks are done, outcome may be ready to close.",
+      "assertions": [
+        {
+          "name": "flags-completed",
+          "type": "llm_judge",
+          "criteria": "The response flags that all tasks are complete and the outcome may be done."
+        },
+        {
+          "name": "uses-completed-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'completed' category or clearly indicates this is a completion issue."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "outcome-no-tasks",
+      "prompt": "Triage this item:\n\n**Project:** Learn Spanish\n**Area:** Personal\n**Tasks:** (none)",
+      "expected_output": "Should flag as stale (no tasks at all) and flag no next action.",
+      "assertions": [
+        {
+          "name": "flags-stale",
+          "type": "llm_judge",
+          "criteria": "The response flags that the outcome has no tasks and appears stale."
+        },
+        {
+          "name": "flags-no-next-action",
+          "type": "llm_judge",
+          "criteria": "The response flags there is no next action defined."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "deadline-urgency-outcome",
+      "prompt": "Triage this item:\n\n**Project:** Small business grant application submitted\n**Area:** Finance\n**Tasks:**\n- \"Write business plan\" p3, no due date, deadline: 2026-04-05\n- \"Get two references\" p4, no due date\n- \"Fill in online application form\" p4, no due date",
+      "expected_output": "Should flag urgent (deadline approaching within 14 days with limited progress) and flag no next action.",
+      "assertions": [
+        {
+          "name": "flags-urgent-deadline",
+          "type": "llm_judge",
+          "criteria": "The response flags the approaching deadline (April 5) as urgent with limited progress."
+        },
+        {
+          "name": "flags-no-next-action",
+          "type": "llm_judge",
+          "criteria": "The response flags that no task has a 'next' label."
+        },
+        {
+          "name": "does-not-suggest-someday",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest deferring to someday — there's a looming deadline."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "parent-task-stale-metadata",
+      "prompt": "Triage this item:\n\n**Parent task:** Shower leak fixed\n**Area:** Home\n**Priority:** p2\n**Due date:** next Monday\n**Labels:** next, home\n**Sub-tasks:**\n- \"Buy replacement washer from hardware store\" [next] p3\n- \"Replace shower washer\" p4",
+      "expected_output": "Should flag as structure issue — parent task has stale scheduling metadata (p2, due date, next/home labels) that belongs on sub-tasks, not the container.",
+      "assertions": [
+        {
+          "name": "flags-stale-metadata",
+          "type": "llm_judge",
+          "criteria": "The response flags that the parent task has leftover scheduling metadata (priority, due date, labels) that doesn't belong on an outcome container."
+        },
+        {
+          "name": "uses-structure-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'structure' category or clearly indicates this is a structural/container hygiene issue."
+        },
+        {
+          "name": "does-not-modify",
+          "type": "llm_judge",
+          "criteria": "The response flags the issue but does not attempt to remove the metadata itself."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "container-too-large",
+      "prompt": "Triage this item:\n\n**Parent task:** Holiday planned and booked\n**Area:** Personal\n**Sub-tasks:**\n- \"Research destinations\" [next] p3\n- \"Compare flight prices\" p3\n- \"Book accommodation\" p3\n- \"Arrange pet sitter\" p4\n- \"Buy travel insurance\" p4\n- \"Pack bags\" p4\n- \"Print boarding passes\" p4",
+      "expected_output": "Should flag as structure issue — parent task has 7 sub-tasks, which exceeds the 5 sub-task guideline for parent tasks. May need to become a project.",
+      "assertions": [
+        {
+          "name": "flags-container-size",
+          "type": "llm_judge",
+          "criteria": "The response flags that the parent task has too many sub-tasks (7, which exceeds the ~5 guideline) and may need restructuring into a project."
+        },
+        {
+          "name": "uses-structure-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'structure' category or clearly indicates this is a container fit issue."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "next-task-blocked-should-be-waiting",
+      "prompt": "Triage this item:\n\n**Task:** Claim Claude Code Max under ABN\n**Project:** Get finances set up for consulting\n**Labels:** [next, computer]\n**Priority:** p3\n**Due date:** (none)\n**Description:** Waiting on ABN registration before this can be done.",
+      "expected_output": "Should flag as status-change — task description says it's blocked on ABN registration but has a 'next' label. Should be 'waiting'.",
+      "assertions": [
+        {
+          "name": "flags-blocked",
+          "type": "llm_judge",
+          "criteria": "The response flags that the task appears blocked (waiting on ABN registration) and shouldn't be labelled 'next'."
+        },
+        {
+          "name": "uses-status-change-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'status-change' category or clearly indicates the label should change from next to waiting."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "waiting-blocker-may-have-cleared",
+      "prompt": "Triage this item:\n\n**Task:** Move Fastmail subscription to ABN\n**Project:** Get finances set up for consulting\n**Labels:** [waiting]\n**Priority:** p3\n**Description:** Waiting on ABN registration before this can be done. ABN was submitted three weeks ago.",
+      "expected_output": "Should flag as status-change — blocker (ABN registration) was submitted 3 weeks ago and may have cleared.",
+      "assertions": [
+        {
+          "name": "flags-possible-resolution",
+          "type": "llm_judge",
+          "criteria": "The response flags that the blocker may have been resolved since it was submitted 3 weeks ago."
+        },
+        {
+          "name": "uses-status-change-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'status-change' category or clearly indicates the blocker may have cleared."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "waiting-long-time-stale",
+      "prompt": "Triage this item:\n\n**Task:** Get refund from airline\n**Project:** Personal\n**Labels:** [waiting]\n**Priority:** p4\n**Description:** Filed a refund claim for cancelled flight. Airline said 6-8 weeks. It's been 4 months.",
+      "expected_output": "Should flag as stale — waiting much longer than expected (4 months vs 6-8 weeks). May not be worth tracking.",
+      "assertions": [
+        {
+          "name": "flags-stale",
+          "type": "llm_judge",
+          "criteria": "The response flags that the task has been waiting far longer than expected and may no longer be worth tracking."
+        },
+        {
+          "name": "notes-timeline-mismatch",
+          "type": "llm_judge",
+          "criteria": "The response notes the discrepancy between the expected 6-8 weeks and actual 4 months."
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "waiting-clearly-valid-no-issues",
+      "prompt": "Triage this item:\n\n**Task:** Research how to employ Zoe in the Pty Ltd\n**Project:** Employ Zoe in the Pty Ltd to optimise household tax\n**Labels:** [waiting]\n**Priority:** p4\n**Description:** Waiting on company setup first. Pty Ltd registration submitted last week.",
+      "expected_output": "Should output 'No issues'. Blocker is clearly still valid (submitted last week).",
+      "assertions": [
+        {
+          "name": "no-issues",
+          "type": "llm_judge",
+          "criteria": "The response says 'No issues' or equivalent — the blocker is clearly recent and valid."
+        },
+        {
+          "name": "does-not-flag-stale",
+          "type": "llm_judge",
+          "criteria": "The response does NOT flag staleness since the blocker was submitted recently."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "next-task-overdue",
+      "prompt": "Triage this item:\n\n**Task:** Email real estate agent about shower issues\n**Project:** Personal\n**Labels:** [next, computer]\n**Priority:** p3\n**Due date:** 2026-03-10 (overdue)\n**Description:** Rusted showerhead needs replacing. Also mold that needs addressing.",
+      "expected_output": "Should flag as scheduling — task is overdue (was due March 10).",
+      "assertions": [
+        {
+          "name": "flags-overdue",
+          "type": "llm_judge",
+          "criteria": "The response flags that the task is overdue."
+        },
+        {
+          "name": "uses-scheduling-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'scheduling' category or clearly indicates this is a date/scheduling issue."
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "next-task-missing-context-label",
+      "prompt": "Triage this item:\n\n**Task:** Buy nappies\n**Project:** Personal\n**Labels:** [next]\n**Priority:** p3\n**Due date:** 2026-03-25\n**Description:** Running low, need to grab more this week.",
+      "expected_output": "Should flag as metadata — next task is missing a context label.",
+      "assertions": [
+        {
+          "name": "flags-missing-context",
+          "type": "llm_judge",
+          "criteria": "The response flags that the task is missing a context label."
+        },
+        {
+          "name": "uses-metadata-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'metadata' category or clearly indicates this is a missing-label issue."
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "priority-mismatch",
+      "prompt": "Triage this item:\n\n**Task:** Setup Pty Ltd for consulting\n**Project:** Get finances set up for consulting\n**Labels:** [next, computer]\n**Priority:** p4\n**Due date:** 2026-03-26\n**Description:** Need this done ASAP — blocks ABN registration, insurance, and claiming expenses. Multiple other tasks waiting on this.",
+      "expected_output": "Should flag as priority — p4 for a task due tomorrow that blocks multiple other tasks is a mismatch.",
+      "assertions": [
+        {
+          "name": "flags-priority-mismatch",
+          "type": "llm_judge",
+          "criteria": "The response flags that p4 is too low for a task that is due very soon and blocks other work."
+        },
+        {
+          "name": "uses-priority-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'priority' category or clearly indicates this is a priority mismatch."
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "deadline-approaching-task",
+      "prompt": "Triage this item:\n\n**Task:** Submit conference talk proposal\n**Project:** Personal\n**Labels:** [next, desk]\n**Priority:** p3\n**Due date:** (none)\n**Deadline:** 2026-03-28\n**Description:** CFP for PyCon AU. Need to write an abstract and bio.",
+      "expected_output": "Should flag as urgent — deadline is 3 days away.",
+      "assertions": [
+        {
+          "name": "flags-urgent-deadline",
+          "type": "llm_judge",
+          "criteria": "The response flags the approaching deadline (within 7 days) as urgent."
+        },
+        {
+          "name": "does-not-over-flag",
+          "type": "llm_judge",
+          "criteria": "The response does not flag priority, context label, or other issues — the deadline is the only concern."
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "deadline-passed-task",
+      "prompt": "Triage this item:\n\n**Task:** Apply for small business grant\n**Project:** Get finances set up for consulting\n**Labels:** [next, desk]\n**Priority:** p2\n**Due date:** 2026-03-15\n**Deadline:** 2026-03-18\n**Description:** State government grant for new businesses. Application form is on the Service NSW website.",
+      "expected_output": "Should flag as urgent — deadline has passed (was March 18). Should also flag as scheduling — the due date (March 15) is overdue.",
+      "assertions": [
+        {
+          "name": "flags-passed-deadline",
+          "type": "llm_judge",
+          "criteria": "The response flags that the deadline (March 18) has passed."
+        },
+        {
+          "name": "uses-urgent-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses an 'urgent' category or clearly indicates this is a time-critical issue."
+        },
+        {
+          "name": "flags-overdue",
+          "type": "llm_judge",
+          "criteria": "The response also flags that the due date (March 15) is overdue, using a 'scheduling' category or equivalent."
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "someday-ready-to-activate",
+      "prompt": "Triage this item:\n\n**Task:** Purchase turtle pillow (travel pillow for planes)\n**Project:** Personal\n**Labels:** [someday]\n**Priority:** p4\n**Description:** Recommended by Zoe. A travel pillow for long-haul flights.\n\nContext: The user just booked flights to Thailand for next month.",
+      "expected_output": "Should flag as activate — circumstances have changed (flights booked), item is ready to become active.",
+      "assertions": [
+        {
+          "name": "flags-activate",
+          "type": "llm_judge",
+          "criteria": "The response flags that the item should be activated given the upcoming travel."
+        },
+        {
+          "name": "uses-activate-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses an 'activate' category or clearly indicates this is ready to move out of someday."
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "someday-outdated",
+      "prompt": "Triage this item:\n\n**Task:** Apply to Antler startup accelerator\n**Project:** Work\n**Labels:** [someday]\n**Priority:** p4\n**Description:** Katie Fry (recruiter) suggested this back in 2024. Antler backs founders from day one — cohort-based, global. Since then I've committed to consulting long-term and have no interest in startup accelerators. The whole premise no longer appeals to me.",
+      "expected_output": "Should flag as outdated — user has clearly moved on from this idea and explicitly says it no longer appeals.",
+      "assertions": [
+        {
+          "name": "flags-outdated",
+          "type": "llm_judge",
+          "criteria": "The response flags that the user has already decided not to pursue this item."
+        },
+        {
+          "name": "uses-outdated-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses an 'outdated' category or clearly indicates the item may no longer be relevant."
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "name": "someday-vague",
+      "prompt": "Triage this item:\n\n**Task:** App idea: tool to easily configure Apple notification settings\n**Project:** Work\n**Labels:** [someday]\n**Priority:** p4\n**Description:** (none)",
+      "expected_output": "Should flag as vague — no description, won't be meaningful on future review.",
+      "assertions": [
+        {
+          "name": "flags-vague",
+          "type": "llm_judge",
+          "criteria": "The response flags that the item lacks enough context and won't be meaningful later."
+        },
+        {
+          "name": "uses-vague-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'vague' category or clearly indicates the item needs more detail to be useful."
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "name": "cross-project-overlap",
+      "prompt": "Triage these outcomes:\n\n**Project:** Home office set up\n**Area:** Home\n**Tasks:**\n- \"Order monitor arm\" [next] p3\n- \"Install cable management tray\" p4\n- \"Buy desk lamp\" p4\n\n**Project:** Standing desk researched and ordered\n**Area:** Home\n**Tasks:**\n- \"Compare Uplift vs Flexispot\" [next] p3\n- \"Measure office space for desk\" p4\n- \"Order chosen desk\" p4\n\n**Project:** Car serviced\n**Area:** Home\n**Tasks:**\n- \"Book service at mechanic\" [next] p3\n- \"Check tyre pressure\" p4",
+      "expected_output": "Individual items should pass or flag as appropriate, then cross-project check should flag overlap between 'Home office set up' and 'Standing desk researched and ordered'. Should NOT flag the car project.",
+      "assertions": [
+        {
+          "name": "flags-overlap",
+          "type": "llm_judge",
+          "criteria": "The response flags an overlap between 'Home office set up' and 'Standing desk researched and ordered'."
+        },
+        {
+          "name": "ignores-unrelated",
+          "type": "llm_judge",
+          "criteria": "The response does not flag 'Car serviced' as related to the other projects."
+        },
+        {
+          "name": "uses-overlap-category",
+          "type": "llm_judge",
+          "criteria": "The cross-project flag uses an 'overlap' category or clearly indicates these outcomes overlap."
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "name": "cross-project-dependency",
+      "prompt": "Triage these outcomes:\n\n**Project:** Brand identity finalised\n**Area:** Work\n**Tasks:**\n- \"Review designer's logo options\" [next] p2\n- \"Choose colour palette\" p3\n- \"Sign off brand guidelines doc\" p3\n\n**Project:** New website launched\n**Area:** Work\n**Tasks:**\n- \"Write homepage copy\" [next] p3\n- \"Design landing page\" p3\n- \"Set up hosting on Vercel\" p4\n\n**Project:** Business cards printed\n**Area:** Work\n**Tasks:**\n- \"Choose card stock and finish\" [next] p4\n- \"Send final design to printer\" p4",
+      "expected_output": "Individual items should pass or flag as appropriate, then cross-project check should flag dependencies — website and business cards both depend on brand identity being finalised.",
+      "assertions": [
+        {
+          "name": "flags-dependency",
+          "type": "llm_judge",
+          "criteria": "The response flags that at least one project depends on 'Brand identity finalised'."
+        },
+        {
+          "name": "uses-dependency-category",
+          "type": "llm_judge",
+          "criteria": "The cross-project flag uses a 'dependency' category or clearly indicates a blocking relationship."
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "name": "cross-project-well-separated",
+      "prompt": "Triage these outcomes:\n\n**Project:** Kitchen tap fixed\n**Area:** Home\n**Tasks:**\n- \"Call plumber to get quote\" [next] p3\n- \"Buy replacement tap washer\" p4\n\n**Project:** Tax return lodged\n**Area:** Finance\n**Tasks:**\n- \"Gather receipts from email\" [next] p2\n- \"Book appointment with accountant\" p3\n\n**Project:** Spanish B1 exam passed\n**Area:** Personal\n**Tasks:**\n- \"Complete Duolingo unit 12\" [next] p3\n- \"Book exam date\" p4",
+      "expected_output": "All individual items should pass with no issues. Cross-project check should find no relationships — projects are clearly unrelated.",
+      "assertions": [
+        {
+          "name": "no-cross-project-flags",
+          "type": "llm_judge",
+          "criteria": "The response does not flag any cross-project overlaps, dependencies, or redundancies."
+        },
+        {
+          "name": "individual-items-pass",
+          "type": "llm_judge",
+          "criteria": "Each individual outcome is reported as having no issues."
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "name": "does-not-ask-questions",
+      "prompt": "Triage this item:\n\n**Project:** Improve home network\n**Area:** Personal\n**Tasks:**\n- \"Research mesh Wi-Fi systems\" p4, no due date\n- \"Check if ISP offers better plan\" p4, no due date",
+      "expected_output": "Should flag issues but NOT ask the user any questions. Triage is an assessment, not a conversation.",
+      "assertions": [
+        {
+          "name": "no-questions",
+          "type": "llm_judge",
+          "criteria": "The response does not ask the user any questions. It states findings as flags, not as prompts for user input."
+        },
+        {
+          "name": "does-not-propose-fixes",
+          "type": "llm_judge",
+          "criteria": "The response does not propose specific fixes (like 'should I add a next label?' or 'want to defer to someday?'). It just flags the issues."
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "next-task-outdated",
+      "prompt": "Triage this item:\n\n**Task:** Apply to Antler startup accelerator\n**Project:** Personal\n**Labels:** [next, computer]\n**Priority:** p3\n**Due date:** (none)\n**Description:** Katie Fry suggested this. Decided not to pursue yet as consulting is a lower-friction first step. Revisit if consulting doesn't pan out.",
+      "expected_output": "Should flag as outdated — the description says the user decided not to pursue this, yet it still has a 'next' label.",
+      "assertions": [
+        {
+          "name": "flags-outdated",
+          "type": "llm_judge",
+          "criteria": "The response flags that the task appears outdated or no longer relevant based on the description."
+        },
+        {
+          "name": "uses-outdated-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses an 'outdated' category or clearly indicates the task may no longer be the right thing to do."
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "name": "cross-project-redundancy",
+      "prompt": "Triage these outcomes:\n\n**Project:** Improve home network\n**Area:** Personal\n**Tasks:**\n- \"Research mesh Wi-Fi systems\" [next, computer] p3\n- \"Check if ISP offers better plan\" p4\n\n**Project:** Mesh Wi-Fi system installed\n**Area:** Personal\n**Tasks:**\n- \"Compare Eero vs Google Wifi vs TP-Link\" [next, computer] p3\n- \"Order chosen system\" p4\n- \"Set up and test coverage\" p4\n\n**Project:** Passport renewed\n**Area:** Personal\n**Tasks:**\n- \"Take new passport photo\" [next, errands] p3\n- \"Fill out renewal form\" p3",
+      "expected_output": "Cross-project check should flag redundancy between 'Improve home network' and 'Mesh Wi-Fi system installed' — they are essentially the same goal. Should NOT flag 'Passport renewed' as related.",
+      "assertions": [
+        {
+          "name": "flags-redundant",
+          "type": "llm_judge",
+          "criteria": "The response flags that 'Improve home network' and 'Mesh Wi-Fi system installed' are redundant or that one has absorbed the other."
+        },
+        {
+          "name": "uses-redundant-category",
+          "type": "llm_judge",
+          "criteria": "The cross-project flag uses a 'redundant' category or clearly indicates these outcomes are essentially the same thing."
+        },
+        {
+          "name": "ignores-unrelated",
+          "type": "llm_judge",
+          "criteria": "The response does not flag 'Passport renewed' as related to the network projects."
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "name": "completed-outcome-no-longer-relevant",
+      "prompt": "Triage this item:\n\n**Project:** Find new apartment before lease ends\n**Area:** Home\n**Tasks:**\n- \"Search listings on Domain and REA\" [next, computer] p2\n- \"Book inspections for shortlisted places\" p3\n\nContext: The user signed a new lease two weeks ago.",
+      "expected_output": "Should flag as completed — the outcome sounds already achieved given the context. Tasks are still open but the goal has been met.",
+      "assertions": [
+        {
+          "name": "flags-completed",
+          "type": "llm_judge",
+          "criteria": "The response flags the outcome as completed or no longer relevant based on the context that a new lease was signed."
+        },
+        {
+          "name": "does-not-flag-other-issues",
+          "type": "llm_judge",
+          "criteria": "The response does not pile on additional flags like missing next actions or staleness — the completion flag is the only one needed."
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "multi-flag-needs-organize-and-prioritize",
+      "prompt": "Triage this item:\n\n**Parent task:** Plan birthday party for Zoe\n**Area:** Personal\n**Priority:** p1\n**Due date:** 2026-04-10\n**Labels:** next\n**Sub-tasks:**\n- \"Book venue\" p4, no due date\n- \"Order cake\" p4, no due date\n- \"Send invitations\" p4, no due date\n- \"Buy decorations\" p4, no due date\n- \"Organise playlist\" p4, no due date\n- \"Arrange catering\" p4, no due date",
+      "expected_output": "Should flag multiple issues: structure (stale metadata on parent — p1, due date, next label belong on sub-tasks not the container), structure (6 sub-tasks, may need to become a project), and no-next-action (no sub-task has a next label). These flags indicate the item needs both organize and prioritize attention.",
+      "assertions": [
+        {
+          "name": "flags-stale-metadata",
+          "type": "llm_judge",
+          "criteria": "The response flags that the parent task has scheduling metadata (p1 priority, due date, next label) that belongs on sub-tasks, not the container."
+        },
+        {
+          "name": "flags-container-size",
+          "type": "llm_judge",
+          "criteria": "The response flags that 6 sub-tasks may be too many for a parent task — may need to become a project."
+        },
+        {
+          "name": "flags-no-next-action",
+          "type": "llm_judge",
+          "criteria": "The response flags that no sub-task has a 'next' label."
+        },
+        {
+          "name": "does-not-fix",
+          "type": "llm_judge",
+          "criteria": "The response does not restructure, reprioritize, or modify anything. It only flags."
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "someday-still-interesting-no-issues",
+      "prompt": "Triage this item:\n\n**Task:** Learn to play ukulele\n**Project:** Personal\n**Labels:** [someday]\n**Priority:** p4\n**Description:** Would be fun for campfires and casual music. No rush — just whenever the mood strikes.",
+      "expected_output": "Should output 'No issues'. The item is clearly still interesting, not ready to activate, and has enough context.",
+      "assertions": [
+        {
+          "name": "no-issues",
+          "type": "llm_judge",
+          "criteria": "The response says 'No issues' or equivalent."
+        },
+        {
+          "name": "does-not-flag-activate",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest activating the item — there's no trigger or reason to."
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "container-too-small-project",
+      "prompt": "Triage this item:\n\n**Project:** Passport renewed\n**Area:** Personal\n**Tasks:**\n- \"Take new passport photo\" [next] p3\n- \"Submit renewal form online\" p4",
+      "expected_output": "Should flag as structure — project with only 2 tasks may be better as a parent task.",
+      "assertions": [
+        {
+          "name": "flags-container-size",
+          "type": "llm_judge",
+          "criteria": "The response flags that the project has very few tasks (2-3) and may be better as a parent task."
+        },
+        {
+          "name": "uses-structure-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'structure' category or clearly indicates this is a container fit issue."
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "someday-project",
+      "prompt": "Triage this item:\n\n**Project:** Build a backyard pizza oven\n**Area:** Home\n**Labels:** [someday]\n**Tasks:**\n- \"Research brick vs clay oven designs\" p4\n- \"Get quotes for materials\" p4\n- \"Check council regulations for outdoor structures\" p4",
+      "expected_output": "Should output 'No issues'. The someday project has enough detail, is clearly still interesting, and there's no trigger to activate it.",
+      "assertions": [
+        {
+          "name": "no-issues",
+          "type": "llm_judge",
+          "criteria": "The response says 'No issues' or equivalent."
+        },
+        {
+          "name": "treats-as-someday",
+          "type": "llm_judge",
+          "criteria": "The response treats this as a someday item (not an active outcome), so it does not flag missing next actions or staleness."
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "high-priority-no-due-date",
+      "prompt": "Triage this item:\n\n**Task:** Cancel old health insurance policy\n**Project:** Finance\n**Labels:** [next, calls]\n**Priority:** p1\n**Due date:** (none)\n**Description:** Switched providers last month. Old policy is still active and being charged.",
+      "expected_output": "Should flag as priority — p1 task with no due date is a mismatch. High priority items should be scheduled.",
+      "assertions": [
+        {
+          "name": "flags-priority-mismatch",
+          "type": "llm_judge",
+          "criteria": "The response flags that a p1 priority task with no due date is a mismatch — high priority work should have a scheduled date."
+        },
+        {
+          "name": "uses-priority-category",
+          "type": "llm_judge",
+          "criteria": "The flag uses a 'priority' category or clearly indicates this is a priority/scheduling mismatch."
+        }
+      ]
+    }
+  ]
+}

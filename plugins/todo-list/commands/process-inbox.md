@@ -24,12 +24,12 @@ allowed-tools:
 
 # Process Inbox
 
-Work through the Todoist inbox one task at a time. Each task gets clarified, routed, and enriched before moving to the next. The goal is inbox zero.
+Work through the Todoist inbox one task at a time. Each task gets organized, prioritized, and enriched before moving to the next. The goal is inbox zero.
 
 ## Setup
 
 1. Fetch all tasks from the Todoist Inbox project.
-2. Fetch all projects (needed to identify areas and check for existing projects/outcomes during routing).
+2. Fetch all projects (needed for area routing and existing outcome checks).
 3. Fetch existing labels (needed for enrichment).
 4. Tell the user how many tasks are in the inbox: "You have N tasks in your inbox. Let's work through them."
 
@@ -46,28 +46,36 @@ Show the task name and description (if any). Keep it brief:
 > **Task 1 of N:** [task name]
 > [description if present]
 
-### 2. Clarify
+### 2. Clarify (conditional)
 
-**Always** load the `clarify-task` skill using the Skill tool — even if the task looks clear. The skill handles actionability (trash/reference) and description enrichment, not just renaming. Never skip this step. The task might be:
-- **Actionable** → sharpen the name/description, then continue to step 3.
-- **Trash** → confirm with the user, delete it, move to the next task.
-- **Reference** → ask where to attach it, add as a comment, delete the inbox item, move to the next task.
+Look at the task name and description. Decide: **is this genuinely vague?**
 
-### 3. Route
+- A task is vague if it's a bare word, a topic with no verb, a question mark, or so ambiguous that no reasonable person could figure out what to do. Examples: "Website?", "James", "Google workspace".
+- A task is clear enough if the intent is obvious, even if imprecise. "Sort out finances", "Call dentist", "Buy present for Mum" — these don't need clarification.
 
-Load the `route-task` skill using the Skill tool. The task will be routed to one of these outcomes:
-- **2-minute task** → user skips it (leaves in inbox to do themselves), move to next task.
-- **Parent task** → load the `setup-outcome` skill, telling it the container type is "parent task". It will define the outcome, assign an area, create the parent task, and add a first sub-task. Then clarify, prioritize, and enrich the first action — run steps 2, 4, and 5 on that sub-task (skip routing, it's already placed).
-- **Project** → load the `setup-outcome` skill, telling it the container type is "sub-project". It will define the outcome, assign an area, create the project, and add a first action. Then clarify, prioritize, and enrich the first action — run steps 2, 4, and 5 on that task (skip routing, it's already in the project).
-- **Single action** → the route-task skill has already moved it to an area project. Continue to step 4.
+**If vague** — load the `clarify` skill using the Skill tool. The skill handles actionability (trash/reference) and sharpening the name/description.
+- If the skill determines the task is **trash** — delete it and move to the next task.
+- If the skill determines it is **reference** — handle as the skill directs, then move to the next task.
+- If **actionable** — continue to step 3.
 
-### 4. Set Priority
+**If clear enough** — skip the skill entirely and continue to step 3.
 
-Load the `set-priority` skill using the Skill tool. Decide the task's priority and, for P1/P2 tasks, propose a due date. Once confirmed, continue to step 5.
+This is the one decision the command makes on its own. For every other step, always load the skill.
+
+### 3. Organize
+
+Load the `organize` skill using the Skill tool. The skill determines:
+- **2-minute task** — leave in inbox for the user to do, move to the next task.
+- **Single action** — routed to an area. Continue to step 4.
+- **Parent task or project** — container created with a first action. Continue to step 4, targeting the **first action** (not the container).
+
+### 4. Prioritize
+
+Load the `prioritize` skill using the Skill tool. This is the key human decision point — priority determines scheduling. Once priority (and due date if applicable) are confirmed, continue to step 5.
 
 ### 5. Enrich
 
-Load the `enrich-task` skill using the Skill tool. Add labels, due dates, and waiting-for status as appropriate. Once confirmed, move to the next task.
+Load the `enrich` skill using the Skill tool. Apply context labels, deadlines, due dates, and waiting-for status as appropriate. Once confirmed, move to the next task.
 
 ### 6. Next
 
@@ -86,8 +94,8 @@ When all tasks are processed, give a brief summary:
 ## Rules
 
 - **One task at a time.** Never show the full inbox list or process multiple tasks in parallel. Present one, finish it, move on.
-- **Don't get ahead of the user.** Wait for their response at each decision point before moving forward. The rhythm is: present → ask → wait → act → confirm → next.
-- **Keep it moving.** Each task should take 30–90 seconds. If a task is getting bogged down, suggest parking it and coming back later.
-- **Skip confidently within steps, not the steps themselves.** If a question within a step has an obvious answer (e.g. the routing is obvious), state the answer and move on rather than asking. But always load every skill — `clarify-task`, `route-task`, `enrich-task` — for every task. The skills handle more than you might expect from the step name alone.
+- **Don't get ahead of the user.** Wait for their response at each decision point before moving forward. The rhythm is: present, ask, wait, act, confirm, next.
+- **Keep it moving.** Each task should take 30-60 seconds. If a task is getting bogged down, suggest parking it and coming back later.
 - **Always load skills via the Skill tool.** When a step says to load a skill, you must call the Skill tool — never skip a skill call because you've already assessed the situation yourself. The skill makes the determination, not you. Follow the skill's instructions — don't inline your own version of their logic.
+- **The one exception is clarify.** The command decides whether to load clarify based on whether the task name and description are genuinely vague. If they're clear enough, skip it. For organize, prioritize, and enrich — always load the skill, no exceptions.
 - **Track progress.** Keep a mental count of what happened to each task so you can give the summary at the end.

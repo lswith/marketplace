@@ -1,0 +1,395 @@
+{
+  "skill_name": "enrich",
+  "evals": [
+    {
+      "id": 1,
+      "name": "context-label-assignment",
+      "prompt": "Enrich this task: **Pick up dry cleaning** — In the Personal project, priority p3, label `next`. Description: 'Suits from the place on High Street, ready after 3pm.'",
+      "expected_output": "Should fetch labels, then silently apply an errands/errand context label since picking up dry cleaning is obviously an errand. Should NOT propose priority changes (already set). Should only use labels that exist.",
+      "assertions": [
+        {
+          "name": "applies-errands-label",
+          "type": "llm_judge",
+          "criteria": "The response applies or proposes a context label appropriate for an errand (e.g. 'errands' or 'errand' — whichever exists in the user's label set). It does this confidently, not as a question."
+        },
+        {
+          "name": "exactly-one-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies exactly one context label — not zero, not two or more."
+        },
+        {
+          "name": "uses-only-fetched-labels",
+          "type": "llm_judge",
+          "criteria": "The response only uses labels that exist in the user's task manager. It does NOT suggest labels like @computer, @phone, or @shopping that weren't fetched."
+        },
+        {
+          "name": "does-not-touch-priority",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose changing the priority. Priority is already set and is out of scope for this skill."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "due-date-from-priority-p1",
+      "prompt": "Enrich this task: **Prepare slide deck for Monday standup** — In the Work project, priority p1, label `next`. No due date set. Description: 'Cover last week's progress and blockers.'",
+      "expected_output": "Should propose a due date because the task is p1 (always gets a specific day). Should apply a context label like 'desk'. Should NOT invent a deadline — there's no hard external constraint mentioned.",
+      "assertions": [
+        {
+          "name": "sets-due-date-for-p1",
+          "type": "llm_judge",
+          "criteria": "The response proposes setting a due date with a specific day, consistent with the task being p1 priority."
+        },
+        {
+          "name": "no-deadline",
+          "type": "llm_judge",
+          "criteria": "The response does NOT set a deadline. There is no hard external constraint — a standup is a routine meeting, not an immovable filing date."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label (e.g. 'desk') appropriate for preparing a slide deck."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "p3-skips-due-date",
+      "prompt": "Enrich this task: **Organise garage shelves** — In the Personal project, priority p3, label `next`. No due date. Description: 'Everything is a mess, need to sort tools and seasonal stuff.'",
+      "expected_output": "Should NOT propose a due date — p3 tasks rarely get one and live in context lists. Should apply 'home' context label. Should not over-enrich.",
+      "assertions": [
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date. P3 tasks rarely get due dates and this task has no reason to be an exception."
+        },
+        {
+          "name": "applies-home-label",
+          "type": "llm_judge",
+          "criteria": "The response applies or proposes the 'home' context label, since organising a garage is a home task."
+        },
+        {
+          "name": "does-not-over-enrich",
+          "type": "llm_judge",
+          "criteria": "The response proposes minimal changes — a context label and little else. It doesn't pepper the task with unnecessary metadata."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "deadline-recognition",
+      "prompt": "Enrich this task: **Submit tax return** — In the Finance project, priority p1, label `next`. No due date or deadline set. Description: 'Self-assessment tax return for 2024/25. HMRC deadline is 31 January 2026.'",
+      "expected_output": "Should set a deadline of 31 January 2026 (hard external constraint). Should also propose a due date (p1 always gets one) earlier than the deadline. Should apply a context label like 'desk'.",
+      "assertions": [
+        {
+          "name": "sets-deadline",
+          "type": "llm_judge",
+          "criteria": "The response proposes setting a deadline of 31 January 2026. The deadline is clearly identified as a hard external constraint, distinct from any due date."
+        },
+        {
+          "name": "distinguishes-deadline-from-due-date",
+          "type": "llm_judge",
+          "criteria": "The response treats the deadline and due date as separate fields. If a due date is proposed, it is a different (earlier) date from the deadline."
+        },
+        {
+          "name": "sets-due-date-for-p1",
+          "type": "llm_judge",
+          "criteria": "The response proposes a due date — the task is p1 and should always have a specific day to work on it."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label appropriate for doing a tax return (e.g. 'desk')."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "waiting-for-detection",
+      "prompt": "Enrich this task: **Book flights to Barcelona** — In the Personal project, priority p2, label `next`. Description: 'Anniversary trip, first week of June. Need to wait for Sarah to confirm she can get the time off work before booking.'",
+      "expected_output": "Should detect the waiting-for situation. Should apply the 'waiting' label and note the blocker (Sarah confirming time off) in the description or a comment. As a p2 task, should also consider a due date.",
+      "assertions": [
+        {
+          "name": "detects-waiting-for",
+          "type": "llm_judge",
+          "criteria": "The response identifies that this task is blocked — waiting for Sarah to confirm time off."
+        },
+        {
+          "name": "applies-waiting-label",
+          "type": "llm_judge",
+          "criteria": "The response proposes applying the 'waiting' label (the actual label name from the user's task manager, not an invented one)."
+        },
+        {
+          "name": "notes-blocker",
+          "type": "llm_judge",
+          "criteria": "The response proposes noting the blocker (Sarah / time off confirmation) in the description or via a comment."
+        },
+        {
+          "name": "uses-only-fetched-labels",
+          "type": "llm_judge",
+          "criteria": "The response does NOT suggest labels that don't exist. Only uses labels available in the user's task manager."
+        },
+        {
+          "name": "considers-due-date-for-p2",
+          "type": "llm_judge",
+          "criteria": "The response considers or proposes a due date, since the task is p2 and p2 tasks usually get a target day. It is acceptable to defer the due date until the blocker is resolved, but the response should not ignore due dates entirely."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "stale-label-cleanup",
+      "prompt": "Enrich this task: **Review Q4 budget spreadsheet** — In the Work project, priority p2, label `next`. Labels include `imported`, `finance-misc`, and `2024`. Description: 'Final review before sending to leadership.'",
+      "expected_output": "Should strip the stale labels (imported, finance-misc, 2024) that don't serve a filtering or workflow purpose. Should apply a context label like 'desk'. Should not remove the 'next' workflow label.",
+      "assertions": [
+        {
+          "name": "removes-stale-labels",
+          "type": "llm_judge",
+          "criteria": "The response proposes removing at least some of the generic/stale labels (imported, finance-misc, 2024) that don't serve a workflow or filtering purpose."
+        },
+        {
+          "name": "keeps-workflow-labels",
+          "type": "llm_judge",
+          "criteria": "The response does NOT remove the 'next' label or any other legitimate workflow/context label."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label (e.g. 'desk') appropriate for reviewing a spreadsheet."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "never-invents-labels",
+      "prompt": "Enrich this task: **Research best noise-cancelling headphones** — In the Personal project, priority p3, label `next`. No other labels. Description: 'Budget around $300, mainly for flights and the office.'",
+      "expected_output": "Should fetch labels and only use ones that exist. 'desk' might fit if available but the task could also be done on a phone while commuting. Should NOT invent labels like 'shopping', 'research', or 'online'.",
+      "assertions": [
+        {
+          "name": "fetches-labels-first",
+          "type": "llm_judge",
+          "criteria": "The response fetches or references the user's existing labels before proposing any label changes."
+        },
+        {
+          "name": "no-invented-labels",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose labels that aren't in the user's existing label set. It does not invent labels like 'shopping', 'research', 'online', or 'tech'."
+        },
+        {
+          "name": "handles-ambiguity",
+          "type": "llm_judge",
+          "criteria": "If no context label is an obvious fit, the response either picks the closest match and explains why, or asks the user which context fits best — rather than forcing an ill-fitting label."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "someday-skips-priority-driven-metadata",
+      "prompt": "Enrich this task: **Learn to play guitar** — In the Personal project. Has the `someday` label. No priority, no due date. Description: 'Always wanted to learn, maybe start with online lessons.'",
+      "expected_output": "Should skip due dates entirely — someday tasks don't get them. Should not set a deadline (no hard external constraint). Should focus on description quality. Context label is fine if obvious (e.g. 'home' or 'desk').",
+      "assertions": [
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date. Someday tasks skip priority-driven scheduling."
+        },
+        {
+          "name": "skips-deadline",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a deadline. There is no hard external constraint for learning guitar."
+        },
+        {
+          "name": "focuses-on-description-quality",
+          "type": "llm_judge",
+          "criteria": "The response considers whether the name and description are solid enough to stand on their own when revisited weeks or months later."
+        },
+        {
+          "name": "does-not-propose-priority",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose setting a priority level. Priority is out of scope and irrelevant for someday items."
+        },
+        {
+          "name": "considers-context-label",
+          "type": "llm_judge",
+          "criteria": "The response either applies a context label if one is an obvious fit (e.g. 'home' or 'desk' for online lessons), or reasonably skips it. It does not ignore context labels entirely without consideration."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "someday-with-hard-deadline",
+      "prompt": "Enrich this task: **Apply for the Smith Foundation grant** — In the Work project. Has the `someday` label. Description: 'Up to $10k for community projects. Applications close 15 June 2026. Would need to write a proposal and get two references.'",
+      "expected_output": "Should skip due date (someday task), but SHOULD set a deadline of 15 June 2026 because there's a hard external closing date. The countdown prevents the window from closing unnoticed if later activated.",
+      "assertions": [
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date — this is a someday item."
+        },
+        {
+          "name": "sets-deadline-despite-someday",
+          "type": "llm_judge",
+          "criteria": "The response DOES propose setting a deadline of 15 June 2026 (the application closing date), even though the task is someday. Hard external deadlines are the exception to the 'skip dates for someday' rule."
+        },
+        {
+          "name": "explains-deadline-rationale",
+          "type": "llm_judge",
+          "criteria": "The response explains or implies why a deadline is being set despite the task being someday — e.g. mentioning the countdown, not missing the window, or the external closing date."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "p2-usually-gets-due-date",
+      "prompt": "Enrich this task: **Draft blog post about remote work lessons** — In the Work project, priority p2, label `next`. No due date. Description: 'Share what we learned from the 6-month remote experiment. Marketing wants it for the company blog.'",
+      "expected_output": "Should propose a due date — p2 tasks usually get a target day this week or next. Should apply a context label like 'desk'. Should NOT set a deadline (no hard external constraint).",
+      "assertions": [
+        {
+          "name": "sets-due-date-for-p2",
+          "type": "llm_judge",
+          "criteria": "The response proposes setting a due date with a target day, consistent with p2 tasks usually getting a due date this week or next."
+        },
+        {
+          "name": "no-deadline",
+          "type": "llm_judge",
+          "criteria": "The response does NOT set a deadline. There is no hard external constraint — marketing wanting something is an internal request, not an immovable external date."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label (e.g. 'desk') appropriate for writing a blog post."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "p4-never-gets-due-date",
+      "prompt": "Enrich this task: **Clean out old email subscriptions** — In the Personal project, priority p4, label `next`. No due date. Description: 'Unsubscribe from newsletters I never read.'",
+      "expected_output": "Should NOT propose a due date — p4 tasks never get one. Should apply a context label like 'desk'. Should not over-enrich.",
+      "assertions": [
+        {
+          "name": "skips-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose a due date. P4 tasks never get due dates."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label (e.g. 'desk') appropriate for managing email subscriptions."
+        },
+        {
+          "name": "does-not-over-enrich",
+          "type": "llm_judge",
+          "criteria": "The response proposes minimal changes — a context label and little else. It does not add unnecessary metadata to a low-priority backlog task."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "does-not-touch-name-or-description",
+      "prompt": "Enrich this task: **Call mum about xmas plans** — In the Personal project, priority p2, label `next`. Description: 'check what dates work for her, also ask about dads present idea.'",
+      "expected_output": "Should apply a context label like 'calls' and consider a due date (p2). Should NOT rewrite the task name or clean up the description — the skill explicitly says don't touch name or description. Grammar, capitalisation, and wording are the user's business.",
+      "assertions": [
+        {
+          "name": "does-not-rename-task",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose changing, rewriting, or 'improving' the task name. The name stays as-is."
+        },
+        {
+          "name": "does-not-rewrite-description",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose rewriting, reformatting, or cleaning up the description text. Grammar and capitalisation fixes are not in scope."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label appropriate for making a phone call (e.g. 'calls')."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "already-enriched-no-op",
+      "prompt": "Enrich this task: **Buy groceries for the week** — In the Personal project, priority p3, label `next`, label `errands`. No due date, no deadline. Description: 'Usual weekly shop — check the meal plan first.'",
+      "expected_output": "The task already has a context label (errands), no due date is needed (p3), and there's no deadline or waiting-for situation. Should recognise the task is already fully enriched and say so — no changes needed.",
+      "assertions": [
+        {
+          "name": "recognises-no-changes-needed",
+          "type": "llm_judge",
+          "criteria": "The response recognises that the task already has the metadata it needs and states that no changes are required."
+        },
+        {
+          "name": "does-not-add-unnecessary-metadata",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose adding a due date, deadline, or additional labels. The task is complete as-is."
+        },
+        {
+          "name": "keeps-it-brief",
+          "type": "llm_judge",
+          "criteria": "The response is concise — it doesn't launch into a full analysis when there's nothing to do. It moves on quickly."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "recurring-task-no-deadline",
+      "prompt": "Enrich this task: **Pay rent** — In the Finance project, priority p1, label `next`. Due date: 'every 1st'. No deadline set. Description: 'Transfer to landlord, due on the 1st of each month.'",
+      "expected_output": "Should NOT set a deadline — deadlines only work on one-time tasks, not recurring ones. The task already has a recurring due date. Should apply a context label like 'desk'.",
+      "assertions": [
+        {
+          "name": "no-deadline-on-recurring",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose setting a deadline. The skill specifies deadlines only apply to one-time tasks, and this is a recurring task."
+        },
+        {
+          "name": "respects-existing-due-date",
+          "type": "llm_judge",
+          "criteria": "The response does NOT propose changing or overriding the existing recurring due date."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies a context label (e.g. 'desk') appropriate for making an online payment."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "one-confirmation-round",
+      "prompt": "Enrich this task: **Set up new standing desk** — In the Work project, priority p2, label `next`. No labels besides `next`. No due date, no deadline. Description: 'Arrived yesterday. Need to assemble it, adjust height, route cables, set up monitor arms.'",
+      "expected_output": "Multiple metadata changes are needed (context label, likely a due date for p2). Should propose ALL changes together in one summary, not ask about them one at a time. One confirmation round max.",
+      "assertions": [
+        {
+          "name": "batches-all-changes",
+          "type": "llm_judge",
+          "criteria": "The response proposes all metadata changes together in a single summary — not spread across multiple questions or confirmation rounds."
+        },
+        {
+          "name": "one-confirmation-only",
+          "type": "llm_judge",
+          "criteria": "The response asks for confirmation at most once. It does not ask 'should I add this label?' and then separately 'should I set a due date?' — everything is bundled."
+        },
+        {
+          "name": "applies-context-label",
+          "type": "llm_judge",
+          "criteria": "The response applies or proposes a context label appropriate for physical setup work."
+        }
+      ],
+      "files": []
+    }
+  ]
+}
